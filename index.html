@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azul Networks - Swiss Blue Hybrid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --blue-50: #EFF6FF;
+            --blue-100: #DBEAFE;
+            --blue-200: #BFDBFE;
+            --blue-300: #93C5FD;
+            --blue-400: #60A5FA;
+            --blue-500: #3B82F6;
+            --blue-600: #2563EB;
+            --blue-700: #1D4ED8;
+            --blue-800: #1E40AF;
+            --blue-900: #1E3A8A;
+            --text-primary: #1E3A8A;
+            --text-secondary: #64748B;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #EFF6FF;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Grid System */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        /* Navigation */
+        nav {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            padding: 40px 0;
+            border-bottom: 2px solid var(--blue-900);
+        }
+
+        .logo {
+            grid-column: span 3;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            color: var(--blue-900);
+        }
+
+        .nav-menu {
+            grid-column: span 6;
+            display: flex;
+            gap: 48px;
+            align-items: center;
+            justify-content: center;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--blue-600);
+        }
+
+        .nav-cta {
+            grid-column: span 3;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .nav-cta button {
+            padding: 12px 32px;
+            background: var(--blue-600);
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-cta button:hover {
+            background: var(--blue-700);
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            padding: 120px 0;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 3D Floating Elements */
+        .floating-cube {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            transform-style: preserve-3d;
+            animation: rotateCube 20s linear infinite;
+        }
+
+        .floating-cube-1 {
+            top: 20%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-cube-2 {
+            bottom: 20%;
+            left: 5%;
+            animation-delay: 10s;
+            width: 60px;
+            height: 60px;
+        }
+
+        @keyframes rotateCube {
+            0% { transform: rotateX(0deg) rotateY(0deg) translateZ(0); }
+            100% { transform: rotateX(360deg) rotateY(360deg) translateZ(0); }
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05));
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .cube-face:nth-child(1) { transform: translateZ(40px); }
+        .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(40px); }
+        .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(40px); }
+        .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(40px); }
+        .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(40px); }
+        .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(40px); }
+
+        .hero-content {
+            grid-column: span 12;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--blue-100);
+            color: var(--blue-700);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: perspective(100px) rotateX(5deg);
+        }
+
+        .hero-title {
+            font-size: 96px;
+            font-weight: 300;
+            line-height: 0.9;
+            letter-spacing: -4px;
+            margin-bottom: 40px;
+            color: var(--blue-900);
+        }
+
+        .hero-title span {
+            font-weight: 700;
+            display: block;
+            background: linear-gradient(180deg, var(--blue-600), var(--blue-800));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            line-height: 1.6;
+            margin: 0 auto 80px;
+        }
+
+        /* Centered Stats Grid with 3D Cards */
+        .hero-stats {
+            grid-column: 2 / 12;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .stat {
+            background: white;
+            padding: 32px 24px;
+            border: 1px solid var(--blue-100);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(0deg);
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.05),
+                0 10px 20px rgba(37, 99, 235, 0.08);
+        }
+
+        .stat::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(37, 99, 235, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat:hover {
+            transform: perspective(1000px) rotateX(-5deg) translateY(-8px);
+            box-shadow: 
+                0 8px 12px rgba(0, 0, 0, 0.1),
+                0 20px 40px rgba(37, 99, 235, 0.15);
+            border-color: var(--blue-300);
+        }
+
+        .stat:hover::before {
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--blue-600), var(--blue-800));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+        }
+
+        /* Access Form Section */
+        .access-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            padding: 80px 0;
+            background: var(--bg-primary);
+            position: relative;
+        }
+
+        /* 3D Sphere */
+        .floating-sphere {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 30% 30%, var(--blue-300), var(--blue-600));
+            border-radius: 50%;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 
+                0 20px 40px rgba(37, 99, 235, 0.3),
+                inset -20px -20px 30px rgba(0, 0, 0, 0.2);
+            animation: floatSphere 10s ease-in-out infinite;
+        }
+
+        @keyframes floatSphere {
+            0%, 100% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-60%) translateX(-10px); }
+        }
+
+        .access-title {
+            grid-column: span 12;
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .access-title h2 {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--blue-900);
+            margin-bottom: 16px;
+        }
+
+        .access-title p {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .access-form {
+            grid-column: 4 / 10;
+            background: var(--bg-secondary);
+            padding: 48px;
+            border: 2px solid var(--blue-100);
+            position: relative;
+            transform-style: preserve-3d;
+            transform: perspective(2000px) rotateX(2deg);
+            box-shadow: 
+                0 20px 40px rgba(37, 99, 235, 0.1),
+                0 40px 80px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .access-form:hover {
+            transform: perspective(2000px) rotateX(0deg);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue-700);
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: white;
+            border: 1px solid var(--blue-200);
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .submit-btn {
+            grid-column: span 2;
+            padding: 16px;
+            background: var(--blue-600);
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .submit-btn:hover {
+            background: var(--blue-700);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Features Grid */
+        .features {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            padding: 120px 0;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .features-header {
+            grid-column: span 12;
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .features-header h2 {
+            font-size: 56px;
+            font-weight: 300;
+            color: var(--blue-900);
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+
+        .feature-card {
+            grid-column: span 4;
+            background: white;
+            padding: 48px;
+            border: 2px solid var(--blue-100);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue-400), var(--blue-600));
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 40%, rgba(37, 99, 235, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: perspective(1000px) rotateX(-5deg) rotateY(2deg) translateZ(20px);
+            box-shadow: 
+                0 30px 60px rgba(37, 99, 235, 0.15),
+                0 40px 80px rgba(0, 0, 0, 0.08);
+            border-color: var(--blue-300);
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue-500), var(--blue-700));
+            margin-bottom: 32px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--blue-900);
+            margin-bottom: 16px;
+        }
+
+        .feature-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .feature-link {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--blue-600);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        /* Members Section */
+        .members {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            padding: 120px 0;
+        }
+
+        .members-header {
+            grid-column: span 12;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .members-header h2 {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--blue-900);
+            margin-bottom: 16px;
+        }
+
+        .member-card {
+            grid-column: span 2;
+            text-align: center;
+            padding: 32px 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--blue-200);
+            transition: all 0.2s;
+        }
+
+        .member-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--blue-400);
+        }
+
+        .member-avatar {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--blue-200), var(--blue-300));
+            border-radius: 50%;
+            margin: 0 auto 16px;
+        }
+
+        .member-id {
+            font-size: 14px;
+            font-family: 'Monaco', monospace;
+            color: var(--blue-700);
+            margin-bottom: 8px;
+        }
+
+        .member-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            padding: 60px 0;
+            border-top: 2px solid var(--blue-900);
+            margin-top: 120px;
+        }
+
+        .footer-brand {
+            grid-column: span 4;
+        }
+
+        .footer-logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--blue-900);
+            margin-bottom: 16px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .footer-nav {
+            grid-column: span 2;
+        }
+
+        .footer-nav h4 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue-700);
+            margin-bottom: 16px;
+        }
+
+        .footer-nav ul {
+            list-style: none;
+        }
+
+        .footer-nav li {
+            margin-bottom: 12px;
+        }
+
+        .footer-nav a {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-nav a:hover {
+            color: var(--blue-600);
+        }
+
+        .footer-bottom {
+            grid-column: 1 / -1;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid var(--blue-100);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copyright {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--blue-600);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 40px;
+            }
+
+            .hero-title {
+                font-size: 72px;
+            }
+
+            .hero-stats {
+                grid-column: 3 / 11;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-card {
+                grid-column: span 6;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .logo {
+                grid-column: span 6;
+            }
+
+            .nav-cta {
+                grid-column: span 6;
+            }
+
+            .hero-content {
+                grid-column: span 12;
+            }
+
+            .hero-title {
+                font-size: 56px;
+            }
+
+            .hero-stats {
+                grid-column: 1 / -1;
+                grid-template-columns: 1fr;
+                gap: 16px;
+                margin-top: 40px;
+            }
+
+            .floating-cube,
+            .floating-sphere {
+                display: none;
+            }
+
+            .access-form {
+                grid-column: 1 / -1;
+                transform: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .submit-btn {
+                grid-column: span 1;
+            }
+
+            .feature-card {
+                grid-column: span 12;
+                transform: none;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-4px);
+            }
+
+            .member-card {
+                grid-column: span 4;
+            }
+
+            .footer-brand,
+            .footer-nav {
+                grid-column: span 12;
+                margin-bottom: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav>
+            <div class="logo">AZUL NETWORKS</div>
+            <ul class="nav-menu">
+                <li><a href="#access">ACCESS</a></li>
+                <li><a href="#intelligence">INTELLIGENCE</a></li>
+                <li><a href="#network">NETWORK</a></li>
+                <li><a href="#resources">RESOURCES</a></li>
+            </ul>
+            <div class="nav-cta">
+                <button>REQUEST ACCESS</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <!-- 3D Floating Cubes -->
+            <div class="floating-cube floating-cube-1">
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+            </div>
+            <div class="floating-cube floating-cube-2">
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+            </div>
+            
+            <div class="hero-content">
+                <div class="hero-badge">PRIVATE NETWORK • INVITATION ONLY</div>
+                <h1 class="hero-title">
+                    Private<br>
+                    Intelligence<br>
+                    <span>Network</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Exclusive access for verified affiliate operators exceeding $100K monthly revenue. 
+                    Direct invitation or referral code required for entry.
+                </p>
+            </div>
+            
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">$5M+</div>
+                    <div class="stat-label">Network Volume</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4.3x</div>
+                    <div class="stat-label">Average ROI</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">20+</div>
+                    <div class="stat-label">Verified Members</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">$1M+</div>
+                    <div class="stat-label">Capital Available</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Access Form Section -->
+        <section class="access-section" id="access">
+            <div class="floating-sphere"></div>
+            <div class="access-title">
+                <h2>Request Network Access</h2>
+                <p>Submit your credentials for verification</p>
+            </div>
+            <form class="access-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" required />
+                    </div>
+                    <div class="form-group full">
+                        <label>Email Address</label>
+                        <input type="email" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Revenue (USD)</label>
+                        <input type="text" required />
+                    </div>
+                    <div class="form-group full">
+                        <label>Invitation Code (Optional)</label>
+                        <input type="text" placeholder="AZUL-2025-XXXXX" />
+                    </div>
+                    <button type="submit" class="submit-btn">SUBMIT APPLICATION</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="intelligence">
+            <div class="features-header">
+                <h2>Network Capabilities</h2>
+                <p style="font-size: 18px; color: var(--text-secondary);">
+                    Advanced tools and resources exclusively for verified members
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3 class="feature-title">Data Streams</h3>
+                <p class="feature-description">
+                    Real-time performance metrics and conversion data from network members. 
+                    Market intelligence unavailable to public affiliates.
+                </p>
+                <a href="#" class="feature-link">LEARN MORE →</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3 class="feature-title">Secure Communications</h3>
+                <p class="feature-description">
+                    Encrypted channels for strategy sharing. End-to-end secure messaging 
+                    between verified network members.
+                </p>
+                <a href="#" class="feature-link">LEARN MORE →</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3 class="feature-title">Analytics Suite</h3>
+                <p class="feature-description">
+                    AI-powered campaign analysis and predictive modeling. Proprietary 
+                    optimization algorithms for maximum performance.
+                </p>
+                <a href="#" class="feature-link">LEARN MORE →</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3 class="feature-title">Capital Access</h3>
+                <p class="feature-description">
+                    Network funding for campaign scaling. Credit lines available for 
+                    qualified high-performing members.
+                </p>
+                <a href="#" class="feature-link">$1M+ AVAILABLE →</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3 class="feature-title">Legal Support</h3>
+                <p class="feature-description">
+                    Compliance guidance and dispute resolution. Corporate structuring 
+                    and asset protection services.
+                </p>
+                <a href="#" class="feature-link">24/7 SUPPORT →</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"></div>
+                <h3 class="feature-title">Training Program</h3>
+                <p class="feature-description">
+                    Weekly sessions with seven-figure affiliates. Advanced tactics 
+                    and emerging opportunities.
+                </p>
+                <a href="#" class="feature-link">VIEW SCHEDULE →</a>
+            </div>
+        </section>
+
+        <!-- Members Section -->
+        <section class="members" id="network">
+            <div class="members-header">
+                <h2>Active Operators</h2>
+                <p style="color: var(--text-secondary);">
+                    Verified members with protected identities
+                </p>
+            </div>
+            <div class="member-card">
+                <div class="member-avatar"></div>
+                <div class="member-id">AZ-001</div>
+                <div class="member-status">FOUNDER</div>
+            </div>
+            <div class="member-card">
+                <div class="member-avatar"></div>
+                <div class="member-id">AZ-017</div>
+                <div class="member-status">ELITE</div>
+            </div>
+            <div class="member-card">
+                <div class="member-avatar"></div>
+                <div class="member-id">AZ-042</div>
+                <div class="member-status">VERIFIED</div>
+            </div>
+            <div class="member-card">
+                <div class="member-avatar"></div>
+                <div class="member-id">AZ-089</div>
+                <div class="member-status">ACTIVE</div>
+            </div>
+            <div class="member-card">
+                <div class="member-avatar"></div>
+                <div class="member-id">AZ-103</div>
+                <div class="member-status">VERIFIED</div>
+            </div>
+            <div class="member-card">
+                <div class="member-avatar"></div>
+                <div class="member-id">AZ-156</div>
+                <div class="member-status">ELITE</div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-brand">
+                <div class="footer-logo">AZUL NETWORKS</div>
+                <p class="footer-text">
+                    The most exclusive affiliate intelligence platform. 
+                    Private access for verified operators only.
+                </p>
+            </div>
+            <div class="footer-nav">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">API Access</a></li>
+                </ul>
+            </div>
+            <div class="footer-nav">
+                <h4>Network</h4>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Members</a></li>
+                    <li><a href="#">Partners</a></li>
+                    <li><a href="#">Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-nav">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">© 2025 Azul Networks. All rights reserved.</div>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Security</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
