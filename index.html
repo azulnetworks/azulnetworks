@@ -90,6 +90,9 @@
   .accent{background:linear-gradient(100deg,var(--violet-bright),var(--magenta) 60%, var(--violet-bright));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 7s linear infinite}
   @keyframes shimmer{to{background-position:200% center}}
   .hero-cta{display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.4rem}
+  .hero-trust{margin-top:1.9rem;display:inline-flex;align-items:center;gap:.6rem;font-size:.88rem;color:var(--muted)}
+  .hero-trust .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px rgba(201,164,90,.9);flex:none}
+  .hero-trust b{color:#EBD9A8;font-weight:600}
 
   .marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;overflow:hidden;white-space:nowrap;background:rgba(7,6,11,.55);backdrop-filter:blur(4px);position:relative;z-index:2}
   .marquee-track{display:inline-flex;gap:3.4rem;animation:scrollx 28s linear infinite}
@@ -139,6 +142,10 @@
   .stat .big{font-family:"Space Grotesk";font-size:clamp(2.2rem,4.4vw,3.1rem);font-weight:700;color:var(--white);line-height:1}
   .stat .big .suf{color:var(--violet-bright)}
   .stat .lbl{margin-top:.7rem;font-size:.86rem;color:var(--muted)}
+  .results-feature{display:flex;align-items:center;gap:8px 22px;flex-wrap:wrap;padding:22px 26px;margin-bottom:20px;border:1px solid rgba(201,164,90,.26);border-radius:18px;background:linear-gradient(100deg,rgba(201,164,90,.10),rgba(139,92,246,.05) 72%)}
+  .rf-num{font-family:"Space Grotesk";font-weight:700;font-size:clamp(2rem,4.6vw,2.9rem);line-height:1;color:#fff;letter-spacing:-.02em;white-space:nowrap}
+  .rf-num i{color:var(--gold);font-style:normal}
+  .rf-lbl{font-size:1rem;color:#D6D2E8}
 
   .cta-band{position:relative;border:1px solid var(--line-strong);border-radius:30px;padding:clamp(40px,7vw,80px);text-align:center;overflow:hidden;background:radial-gradient(120% 130% at 50% 0%, rgba(139,92,246,.26), transparent 55%),linear-gradient(180deg,rgba(22,18,36,.8),rgba(12,10,20,.76));backdrop-filter:blur(16px);box-shadow:0 60px 140px -50px rgba(0,0,0,.92)}
   .cta-band::before{content:"";position:absolute;left:30px;right:30px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,164,90,.5) 35%,rgba(168,148,255,.55) 65%,transparent);opacity:.7}
@@ -216,7 +223,7 @@
       <a href="#process">How it works</a>
       <a href="#system">The system</a>
       <a href="#results">Results</a>
-      <a href="#contact" class="btn btn-primary" style="align-self:flex-start">Book a call</a>
+      <a href="#contact" class="btn btn-ghost" style="align-self:flex-start">Book a call</a>
     </div>
   </header>
 
@@ -233,6 +240,7 @@
           <a href="#contact" class="btn btn-primary">Book a strategy call →</a>
           <a href="#process" class="btn btn-ghost">See how the AI scales</a>
         </div>
+        <div class="hero-trust"><span class="dot"></span>Over <b>$1M</b> in ad results generated for partners</div>
       </div>
     </section>
 
@@ -307,6 +315,10 @@
           <span class="eyebrow">Why it works</span>
           <h2>Built to put real budget behind what works.</h2>
           <p>The system is engineered to scale spend the moment something proves out — past the point a single media buyer can manage by hand.</p>
+        </div>
+        <div class="results-feature">
+          <div class="rf-num">$1M<i>+</i></div>
+          <div class="rf-lbl">In ad results generated across partner campaigns</div>
         </div>
         <div class="results">
           <div class="stat"><div class="big">$<span data-count="50" data-suffix="k"></span><span class="suf">/day</span></div><div class="lbl">Ad spend the AI can profitably manage on both platforms</div></div>
