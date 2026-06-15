@@ -209,7 +209,6 @@
         <a href="#system">The system</a>
         <a href="#results">Results</a>
       </nav>
-      <a href="#contact" class="btn btn-primary" style="display:none" id="navCta">Book a call</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
     <div class="mobile-panel" id="mobilePanel">
@@ -388,8 +387,8 @@
   window.addEventListener("load", function(){ measure(); ready=true; target=100; });
   setTimeout(function(){ ready=true; target=100; }, 4000);
 
-  var header=document.getElementById("header"), navCta=document.getElementById("navCta");
-  function onScroll(){ if(window.scrollY>40){ header.classList.add("scrolled"); navCta.style.display="inline-flex"; } else { header.classList.remove("scrolled"); navCta.style.display="none"; } }
+  var header=document.getElementById("header");
+  function onScroll(){ if(window.scrollY>40){ header.classList.add("scrolled"); } else { header.classList.remove("scrolled"); } }
   window.addEventListener("scroll", onScroll, {passive:true}); onScroll();
   var toggle=document.getElementById("menuToggle"), panel=document.getElementById("mobilePanel");
   toggle.addEventListener("click", function(){ var o=panel.classList.toggle("open"); toggle.setAttribute("aria-expanded", o?"true":"false"); });
