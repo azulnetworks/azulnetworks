@@ -432,11 +432,11 @@ function tglHTML(id,on){
 function rowHTML(kind,item,open){
   const on = item.status==='live';
   const kids = kind==='campaign'?item.groups.length+' ad groups':kind==='group'?item.ads.length+' ads':'';
-  const chev = kind==='ad' ? '<span class="chev-sp"></span>'
-    : `<button class="chev ${open?'open':''}" data-expand="${item.id}" aria-label="Expand">▸</button>`;
+  const canExp = kind!=='ad';
+  const chev = canExp ? `<span class="chev ${open?'open':''}" aria-hidden="true">▸</span>` : '<span class="chev-sp"></span>';
   const meta = kind==='campaign'?'Campaign':kind==='group'?'Ad group':'Ad';
   return `<div class="trow lvl-${kind}">
-    <div class="tmain">${chev}
+    <div class="tmain"${canExp?` data-expand="${item.id}" role="button" tabindex="0" aria-expanded="${open}" style="cursor:pointer"`:''}>${chev}
       <div class="tlabel"><span class="tname">${item.name}</span><span class="tkind">${meta}${kids?' · '+kids:''}</span></div>
     </div>
     <div class="tctrls">
