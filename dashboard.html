@@ -153,9 +153,9 @@
   .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
   @media(max-width:560px){.fgrid{grid-template-columns:1fr}}
   .pills{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
-  .pill{border:1px solid var(--line-strong);border-radius:10px;padding:9px 14px;font-size:.85rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s}
-  .pill:has(input:checked){border-color:rgba(167,139,250,.7);background:rgba(139,92,246,.16);color:#fff}
-  .pill input{accent-color:var(--violet)}
+  .rpill{border:1px solid var(--line-strong);border-radius:10px;padding:9px 14px;font-size:.85rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s}
+  .rpill:has(input:checked){border-color:rgba(167,139,250,.7);background:rgba(139,92,246,.16);color:#fff}
+  .rpill input{accent-color:var(--violet)}
   select.f2{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 19px,calc(100% - 13px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
   .modal2{position:fixed;inset:0;z-index:60;display:none;align-items:flex-start;justify-content:center;padding:28px 16px;overflow:auto}
   .modal2.open{display:flex}
@@ -173,7 +173,7 @@
 <!-- LOGIN -->
 <div id="login">
   <form class="lg-card" id="loginForm" autocomplete="on">
-    <div class="lg-hud"><span class="dot"></span>Agents ● online</div>
+    <div class="lg-hud"><span class="dot"></span><span class="agentN">—</span> agents ● online</div>
     <div class="brand"><span class="logo"></span><b>Azul Networks</b></div>
     <div class="lg-h">Welcome back.</div>
     <div class="lg-sub">Sign in to your ads dashboard.</div>
@@ -192,7 +192,7 @@
   <div class="top">
     <div class="brand"><span class="logo"></span><div><b style="display:block">Azul Networks</b><span class="pill">Solo · Frankfurt</span></div></div>
     <div style="display:flex;align-items:center;gap:14px">
-      <span class="pill"><span class="dot"></span>Agents ● online</span>
+      <span class="pill"><span class="dot"></span><span class="agentN">—</span> agents ● online</span>
       <button class="signout" id="signout">Sign out</button>
     </div>
   </div>
@@ -268,14 +268,14 @@
 
       <label class="f">Campaign mode</label>
       <div class="pills">
-        <label class="pill"><input type="radio" name="mode" value="smart" checked/> Smart campaign</label>
-        <label class="pill"><input type="radio" name="mode" value="manual"/> Manual campaign</label>
+        <label class="rpill"><input type="radio" name="mode" value="smart" checked/> Smart campaign</label>
+        <label class="rpill"><input type="radio" name="mode" value="manual"/> Manual campaign</label>
       </div>
 
       <label class="f">Budget level</label>
       <div class="pills">
-        <label class="pill"><input type="radio" name="blevel" value="cbo" checked/> CBO — campaign budget</label>
-        <label class="pill"><input type="radio" name="blevel" value="abo"/> ABO — ad group budget</label>
+        <label class="rpill"><input type="radio" name="blevel" value="cbo" checked/> CBO — campaign budget</label>
+        <label class="rpill"><input type="radio" name="blevel" value="abo"/> ABO — ad group budget</label>
       </div>
 
       <div class="fgrid">
@@ -656,7 +656,7 @@ function syncCampPixels(){
   const b=byId(BCS,document.getElementById("cfBc").value);
   const aid=document.getElementById("cfAcct").value;
   const px=(b?b.pixels:[]).filter(p=>p.shared.includes(aid));
-  fillSel(document.getElementById("cfPixel"), [{v:"",t:px.length?"— select shared pixel —":"No pixels shared to this account"}].concat(px.map(p=>({v:p.id,t:p.name}))), "");
+  fillSel(document.getElementById("cfPixel"), [{v:"",t:"No pixel — don\u2019t track conversions"}].concat(px.map(p=>({v:p.id,t:p.name}))), "");
 }
 function syncCampAccts(){
   const b=byId(BCS,document.getElementById("cfBc").value);
@@ -702,5 +702,6 @@ document.querySelectorAll('.nav [data-view]').forEach(a=>a.addEventListener("cli
   if(v==="manage") renderMgr();
 }));
 </script>
+<script>(function(){function r(){return 9+Math.floor(Math.random()*18);}function u(){document.querySelectorAll(".agentN").forEach(function(e){e.textContent=r();});}u();setInterval(u,4500);})();</script>
 </body>
 </html>

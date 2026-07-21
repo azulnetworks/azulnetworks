@@ -59,9 +59,26 @@
   .trust b{color:#F4F4F7;font-weight:600}
 
   /* MARQUEE */
-  .marquee{border-top:1px solid rgba(168,148,255,.08);border-bottom:1px solid rgba(168,148,255,.08);padding:16px 0;overflow:hidden;white-space:nowrap;margin:24px 0 0}
+  .marquee{border-top:1px solid rgba(168,148,255,.08);border-bottom:1px solid rgba(168,148,255,.08);padding:16px 0;overflow:hidden;white-space:nowrap;margin:24px 0 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+  .marquee-track{display:inline-flex;align-items:center;white-space:nowrap;animation:mscroll 34s linear infinite;will-change:transform}
+  .marquee-track:hover{animation-play-state:paused}
   .marquee span{font-family:"JetBrains Mono";font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 18px}
   .marquee .sep{color:var(--violet)}
+  @keyframes mscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  #preloader{position:fixed;inset:0;z-index:100;background:#07060B;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .8s ease,visibility .8s}
+  #preloader.done{opacity:0;visibility:hidden}
+  .pre-logo{width:72px;height:72px;background:url("logo.png") center/contain no-repeat;filter:drop-shadow(0 0 26px rgba(139,92,246,.55));animation:prespin 6s linear infinite}
+  @keyframes prespin{to{transform:rotate(360deg)}}
+  .pre-count{font-family:"Space Grotesk";font-weight:700;font-size:clamp(2.6rem,11vw,4.6rem);color:#fff;line-height:1;display:flex;align-items:flex-start}
+  .pre-count .pct{font-size:.34em;color:var(--violet-bright);margin-top:.5em;margin-left:.1em}
+  .pre-bar{width:min(240px,60vw);height:2px;background:rgba(168,148,255,.16);border-radius:2px;overflow:hidden}
+  .pre-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--magenta));transition:width .18s linear}
+  .pre-label{font-family:"JetBrains Mono";font-size:.64rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+  .hud{position:fixed;left:20px;bottom:18px;z-index:30;font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.1em;color:rgba(142,137,168,.75);display:grid;gap:5px;pointer-events:none;opacity:0;transition:opacity .8s ease .4s}
+  .loaded .hud{opacity:1}
+  .hud b{color:#F4F4F7;font-weight:500}
+  .hud .on{color:var(--good)}
+  @media(max-width:640px){.hud{display:none}}
 
   section{padding:80px 0}
   .tag{font-family:"JetBrains Mono";font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--violet-bright);margin-bottom:14px}
@@ -99,6 +116,16 @@
 </head>
 <body>
 <div id="aura" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+<div id="preloader">
+  <div class="pre-logo" aria-hidden="true"></div>
+  <div class="pre-count"><span id="preNum">0</span><span class="pct">%</span></div>
+  <div class="pre-bar"><i id="preBar"></i></div>
+  <div class="pre-label">Initializing system</div>
+</div>
+<div class="hud" id="hud" aria-hidden="true">
+  <div>AGENTS <b class="on" id="hAgents">&mdash; &#9679; ONLINE</b></div>
+  <div>TIME ONLINE <b id="hUptime">00:00:00</b></div>
+</div>
 
 <header>
   <div class="wrap">
@@ -129,8 +156,8 @@
     </section>
   </div>
 
-  <div class="marquee">
-    <span>Spend scaling</span><span class="sep">/</span><span>Predictive budgeting</span><span class="sep">/</span><span>Autonomous optimization</span><span class="sep">/</span><span>Budget pacing</span><span class="sep">/</span><span>Multi-account</span><span class="sep">/</span><span>TikTok Ads</span><span class="sep">/</span><span>Meta Ads</span><span class="sep">/</span>
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track"><span>Spend scaling</span><span class="sep">/</span><span>Predictive budgeting</span><span class="sep">/</span><span>Autonomous optimization</span><span class="sep">/</span><span>Budget pacing</span><span class="sep">/</span><span>Multi-account</span><span class="sep">/</span><span>TikTok Ads</span><span class="sep">/</span><span>Meta Ads</span><span class="sep">/</span><span>Spend scaling</span><span class="sep">/</span><span>Predictive budgeting</span><span class="sep">/</span><span>Autonomous optimization</span><span class="sep">/</span><span>Budget pacing</span><span class="sep">/</span><span>Multi-account</span><span class="sep">/</span><span>TikTok Ads</span><span class="sep">/</span><span>Meta Ads</span><span class="sep">/</span></div>
   </div>
 
   <div class="wrap">
@@ -220,5 +247,25 @@
     </div>
   </footer>
 </main>
+<script>
+(function(){
+  var pl=document.getElementById("preloader"),pn=document.getElementById("preNum"),pb=document.getElementById("preBar");
+  var cur=0,target=88,ready=false,done=false;
+  function setP(v){pn.textContent=Math.round(v);pb.style.width=v.toFixed(1)+"%";}
+  function tick(){cur+=(target-cur)*0.08+0.35;if(cur>=100)cur=100;setP(cur);if(cur>=99.6&&ready){finish();return;}requestAnimationFrame(tick);}
+  function finish(){if(done)return;done=true;setP(100);pl.classList.add("done");document.body.classList.add("loaded");}
+  requestAnimationFrame(tick);
+  window.addEventListener("load",function(){ready=true;target=100;});
+  setTimeout(function(){ready=true;target=100;},2600);
+  var hA=document.getElementById("hAgents"),hU=document.getElementById("hUptime");
+  function ri(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+  function two(n){return (n<10?"0":"")+n;}
+  function paintA(){hA.innerHTML=ri(9,26)+" \u25CF ONLINE";}
+  paintA();setInterval(paintA,4000);
+  var up=ri(3600,3600*72);
+  function paintU(){up++;var h=Math.floor(up/3600),m=Math.floor(up%3600/60),sec=up%60;hU.textContent=two(h)+":"+two(m)+":"+two(sec);}
+  paintU();setInterval(paintU,1000);
+})();
+</script>
 </body>
 </html>
