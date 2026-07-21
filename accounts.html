@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Azul Networks — Business Centers</title>
+<meta name="theme-color" content="#07060B" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#07060B;--line:rgba(168,148,255,.14);--line-strong:rgba(168,148,255,.30);--violet-bright:#A78BFA;--text:#ECE9F7;--muted:#8E89A8;--dim:#6b6788;--good:#34D399;--warn:#FBBF24;--bad:#F87171}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(125% 80% at 50% -8%, #190f33 0%, #0b0817 42%, #07060B 78%),var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  #aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  #aura .blob{position:absolute;border-radius:50%;filter:blur(95px);mix-blend-mode:screen;opacity:.4}
+  #aura .b1{width:52vw;height:52vw;left:-8vw;top:-12vh;background:radial-gradient(circle,rgba(139,92,246,.6),transparent 68%)}
+  #aura .b2{width:46vw;height:46vw;right:-10vw;bottom:-14vh;background:radial-gradient(circle,rgba(192,38,211,.38),transparent 68%)}
+  h1,h2,h3{font-family:"Space Grotesk",sans-serif;font-weight:600;letter-spacing:-.02em}
+
+  #login{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px}
+  .lg-card{position:relative;width:100%;max-width:400px;padding:36px 32px;border-radius:22px;border:1px solid var(--line-strong);background:linear-gradient(180deg,rgba(26,21,42,.78),rgba(12,10,20,.72));backdrop-filter:blur(18px);box-shadow:0 50px 120px -50px rgba(0,0,0,.92)}
+  .lg-hud{font-family:"JetBrains Mono";font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:7px;margin-bottom:20px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 9px var(--good)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:32px;height:32px;flex:none;border-radius:8px;background:linear-gradient(135deg,#2f7de0,#8B5CF6 55%,#C026D3);box-shadow:0 0 16px rgba(139,92,246,.5)}
+  .brand b{font-family:"Space Grotesk";font-weight:600;font-size:1.12rem;color:#F4F4F7}
+  .lg-h{font-size:1.4rem;color:#fff;margin:16px 0 4px}
+  .lg-sub{font-size:.86rem;color:var(--muted);margin-bottom:22px}
+  label.f{font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#9C97B8;display:block;margin:0 0 6px}
+  input.f{width:100%;height:44px;padding:0 14px;margin-bottom:16px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-family:"Inter";font-size:.95rem}
+  input.f:focus{outline:none;border-color:rgba(167,139,250,.6);box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+  .btn{width:100%;height:46px;border:0;border-radius:12px;background:#fff;color:#0B0813;font-family:"Space Grotesk";font-weight:600;font-size:.95rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .lg-err{color:var(--bad);font-size:.82rem;margin-top:12px;min-height:18px}
+  .lg-foot{margin-top:16px;text-align:center;font-size:.76rem;color:var(--dim)}
+
+  #app{display:none;position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:14px}
+  .pill{font-family:"JetBrains Mono";font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+  .nav{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);margin-bottom:22px}
+  .nav a{font-family:"JetBrains Mono";font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:8px 14px;border-radius:9px;transition:.2s}
+  .nav a:hover{color:var(--text)}
+  .nav a.on{background:linear-gradient(180deg,rgba(139,92,246,.28),rgba(139,92,246,.14));color:#fff;box-shadow:0 0 0 1px rgba(168,148,255,.3) inset}
+  .signout{background:none;border:1px solid var(--line);color:var(--muted);font-size:.82rem;padding:7px 13px;border-radius:9px;cursor:pointer}
+  .signout:hover{border-color:var(--line-strong);color:var(--text)}
+
+  .crumb{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-family:"JetBrains Mono";font-size:.72rem;color:var(--muted);flex-wrap:wrap}
+  .crumb a{color:var(--violet-bright);cursor:pointer;text-decoration:none}
+  .crumb .sep{color:#4b4869}
+  .hd{font-size:1.3rem;color:#fff;margin-bottom:2px}
+  .sub{font-size:.85rem;color:var(--muted);margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+  .card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,rgba(18,15,30,.55),rgba(11,9,18,.46));cursor:pointer;transition:.2s}
+  .card:hover{border-color:rgba(167,139,250,.5);transform:translateY(-2px)}
+  .card .nm{font-family:"Space Grotesk";font-weight:600;font-size:1rem;color:#F4F4F7;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .card .meta{display:flex;gap:16px;margin-top:12px}
+  .card .meta .k{font-family:"JetBrains Mono";font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .card .meta .v{font-family:"Space Grotesk";font-weight:600;font-size:1.05rem;color:#ECE9F7;margin-top:3px}
+  .chev{color:var(--muted);font-size:16px}
+  .badge{font-family:"JetBrains Mono";font-size:.56rem;padding:2px 8px;border-radius:20px}
+  .b-live{background:rgba(52,211,153,.14);color:var(--good)}.b-pause{background:rgba(251,191,36,.14);color:var(--warn)}
+  .low{color:var(--warn)}.ok{color:var(--good)}
+
+  .ranges{display:inline-flex;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);gap:2px;margin:4px 0 18px;flex-wrap:wrap}
+  .ranges button{background:none;border:0;color:var(--muted);font-family:"JetBrains Mono";font-size:.72rem;padding:8px 13px;border-radius:9px;cursor:pointer}
+  .ranges button.on{background:linear-gradient(180deg,rgba(139,92,246,.28),rgba(139,92,246,.14));color:#fff;box-shadow:0 0 0 1px rgba(168,148,255,.3) inset}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:0 0 18px}
+  .m{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:linear-gradient(180deg,rgba(18,15,30,.5),rgba(11,9,18,.42))}
+  .m .k{font-family:"JetBrains Mono";font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .m .v{font-family:"Space Grotesk";font-size:1.25rem;font-weight:600;color:#F4F4F7;margin-top:5px}
+  .tbl-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:760px}
+  thead th{font-family:"JetBrains Mono";font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:400;text-align:right;padding:0 9px 11px}
+  thead th:first-child{text-align:left}
+  tbody td{padding:12px 9px;text-align:right;color:#D9D6E6;border-top:1px solid rgba(168,148,255,.08);white-space:nowrap}
+  tbody td:first-child{text-align:left;color:#F4F4F7}
+  .g{color:var(--good)}.w{color:var(--warn)}
+</style>
+</head>
+<body>
+<div id="aura" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div></div>
+
+<div id="login">
+  <form class="lg-card" id="loginForm">
+    <div class="lg-hud"><span class="dot"></span>Agents ● online</div>
+    <div class="brand"><span class="logo"></span><b>Azul Networks</b></div>
+    <div class="lg-h">Welcome back.</div>
+    <div class="lg-sub">Sign in to your ads dashboard.</div>
+    <label class="f" for="email">Email</label>
+    <input class="f" id="email" type="email" placeholder="you@azul-networks.com" required />
+    <label class="f" for="pw">Password</label>
+    <input class="f" id="pw" type="password" placeholder="••••••••" required />
+    <button class="btn" type="submit">Sign in <span aria-hidden="true">→</span></button>
+    <div class="lg-err" id="err"></div>
+    <div class="lg-foot" id="loginHint">Demo: you@azul-networks.com / demo1234</div>
+  </form>
+</div>
+
+<div id="app">
+  <div class="top">
+    <div class="brand"><span class="logo"></span><div><b style="display:block">Ads Engine</b><span class="pill">Solo · Frankfurt</span></div></div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span class="pill"><span class="dot"></span>Agents ● online</span>
+      <button class="signout" id="signout">Sign out</button>
+    </div>
+  </div>
+  <div class="nav">
+    <a href="dashboard.html">Overview</a>
+    <a class="on">Business Centers</a>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script>
+const API_BASE = ""; // e.g. "https://your-app.vercel.app"
+const TOPUP_URL = "https://ads.tiktok.com/i18n/account/payment";
+const usd = v => "$"+Number(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = v => Math.round(Number(v)).toLocaleString("en-US");
+let token = sessionStorage.getItem("azul_token") || "";
+
+/* ---------- demo data ---------- */
+const RANGE = {"1h":0.004,"1d":0.03,"7d":0.20,"30d":0.72,"all":1};
+const LABEL = {"1h":"last hour","1d":"last 24h","7d":"last 7 days","30d":"last 30 days","all":"all time"};
+const DEMO = [
+  {id:"bc1",name:"Azul Media US",balance:612.40,accounts:[
+    {id:"a1",name:"US Rewards 01",status:"live",balance:248.5,base:{impr:1980000,clicks:47200,spend:742,conv:668},
+      camps:[{n:"US Freecash CPI",s:"live",impr:1100000,clicks:26000,spend:412,conv:381},{n:"US Block Puzzle",s:"live",impr:880000,clicks:21200,spend:330,conv:287}]},
+    {id:"a2",name:"US Rewards 02",status:"live",balance:210.9,base:{impr:1240000,clicks:29800,spend:531,conv:452},
+      camps:[{n:"US Reco Social",s:"live",impr:1240000,clicks:29800,spend:531,conv:452}]},
+    {id:"a3",name:"US Test Pool",status:"pause",balance:153.0,base:{impr:320000,clicks:6100,spend:96,conv:71},
+      camps:[{n:"US Survey CPL",s:"pause",impr:320000,clicks:6100,spend:96,conv:71}]},
+  ]},
+  {id:"bc2",name:"Azul Media UK",balance:431.10,accounts:[
+    {id:"a4",name:"UK Rewards 01",status:"live",balance:301.2,base:{impr:1640000,clicks:39100,spend:814,conv:641},
+      camps:[{n:"UK Reco Social",s:"live",impr:1050000,clicks:25000,spend:520,conv:410},{n:"UK Playful Rewards",s:"live",impr:590000,clicks:14100,spend:294,conv:231}]},
+    {id:"a5",name:"UK Rewards 02",status:"live",balance:129.9,base:{impr:690000,clicks:15400,spend:288,conv:214},
+      camps:[{n:"UK Freecash CPI",s:"live",impr:690000,clicks:15400,spend:288,conv:214}]},
+  ]},
+  {id:"bc3",name:"Scale Partners",balance:1208.00,accounts:[
+    {id:"a6",name:"CA Rewards 01",status:"live",balance:402.0,base:{impr:910000,clicks:20400,spend:377,conv:248},camps:[{n:"CA Block Puzzle",s:"live",impr:910000,clicks:20400,spend:377,conv:248}]},
+    {id:"a7",name:"AU Rewards 01",status:"live",balance:388.5,base:{impr:740000,clicks:16800,spend:301,conv:203},camps:[{n:"AU Survey CPL",s:"live",impr:740000,clicks:16800,spend:301,conv:203}]},
+    {id:"a8",name:"DE Rewards 01",status:"pause",balance:210.5,base:{impr:410000,clicks:8900,spend:142,conv:97},camps:[{n:"DE Reco Social",s:"pause",impr:410000,clicks:8900,spend:142,conv:97}]},
+    {id:"a9",name:"NL Rewards 01",status:"live",balance:207.0,base:{impr:620000,clicks:14100,spend:264,conv:188},camps:[{n:"NL Freecash CPI",s:"live",impr:620000,clicks:14100,spend:264,conv:188}]},
+  ]},
+];
+const derive = (impr,clicks,spend,conv) => ({impr,clicks,spend,conv,
+  ctr:impr?clicks/impr*100:0, cpc:clicks?spend/clicks:0, cpm:impr?spend/impr*1000:0, costConv:conv?spend/conv:0});
+
+/* ---------- data source ---------- */
+async function api(path){
+  const res = await fetch(`${API_BASE}${path}`, { headers:{ Authorization:`Bearer ${token}` } });
+  if(res.status===401){ signOut(); throw new Error("session expired"); }
+  return res.json();
+}
+async function fetchBCs(){
+  if(API_BASE) return (await api("/api/business-centers")).businessCenters;
+  return DEMO.map(bc=>({id:bc.id,name:bc.name,accountCount:bc.accounts.length,balance:bc.balance}));
+}
+async function fetchAccounts(bcId){
+  if(API_BASE) return (await api(`/api/accounts?bc_id=${bcId}`)).accounts;
+  const bc=DEMO.find(x=>x.id===bcId);
+  return bc.accounts.map(a=>({id:a.id,name:a.name,status:a.status,balance:a.balance,spend7d:a.base.spend,conv7d:a.base.conv}));
+}
+async function fetchAccountReport(acId,range){
+  if(API_BASE){
+    const d = await api(`/api/report?advertiser_id=${acId}&range=${range}`);
+    return { totals:d.totals, rows:d.rows };
+  }
+  let a; DEMO.forEach(bc=>bc.accounts.forEach(x=>{ if(x.id===acId) a=x; }));
+  const f=RANGE[range];
+  const rows=a.camps.map(c=>({name:c.n,status:c.s,...derive(c.impr*f,c.clicks*f,c.spend*f,c.conv*f)}));
+  const b=a.base, t=derive(b.impr*f,b.clicks*f,b.spend*f,b.conv*f);
+  return { totals:t, rows };
+}
+
+/* ---------- views ---------- */
+const V = document.getElementById("view");
+let currentBC = null, currentAcc = null;
+
+async function viewBCs(){
+  currentBC=null; currentAcc=null;
+  const bcs = await fetchBCs();
+  V.innerHTML = `
+    <div class="crumb"><span>Business Centers</span></div>
+    <div class="hd">Business Centers</div>
+    <div class="sub">${bcs.length} connected · click one to see its ad accounts</div>
+    <div class="grid">${bcs.map(bc=>`
+      <div class="card" data-bc="${bc.id}">
+        <div class="nm">${bc.name} <i class="ti ti-chevron-right chev" aria-hidden="true"></i></div>
+        <div class="meta">
+          <div><div class="k">Ad accounts</div><div class="v">${bc.accountCount}</div></div>
+          <div><div class="k">Total balance</div><div class="v">${usd(bc.balance)}</div></div>
+        </div>
+      </div>`).join("")}</div>`;
+  V.querySelectorAll("[data-bc]").forEach(c=>c.onclick=()=>viewAccounts(c.dataset.bc, c.querySelector(".nm").textContent.trim()));
+}
+
+async function viewAccounts(bcId, bcName){
+  currentBC={id:bcId,name:bcName};
+  const accts = await fetchAccounts(bcId);
+  V.innerHTML = `
+    <div class="crumb"><a id="home">Business Centers</a><span class="sep">/</span><span>${bcName}</span></div>
+    <div class="hd">${bcName}</div>
+    <div class="sub">${accts.length} ad accounts · click one for its metrics</div>
+    <div class="grid">${accts.map(a=>`
+      <div class="card" data-ac="${a.id}" data-nm="${a.name}">
+        <div class="nm">${a.name} <span class="badge ${a.status==='live'?'b-live':'b-pause'}">${a.status==='live'?'Live':'Paused'}</span></div>
+        <div class="meta">
+          <div><div class="k">Balance</div><div class="v ${a.balance<200?'low':'ok'}">${usd(a.balance)}</div></div>
+          <div><div class="k">Spend 7d</div><div class="v">${usd(a.spend7d)}</div></div>
+          <div><div class="k">Conv.</div><div class="v">${num(a.conv7d)}</div></div>
+        </div>
+      </div>`).join("")}</div>`;
+  V.querySelector("#home").onclick=viewBCs;
+  V.querySelectorAll("[data-ac]").forEach(c=>c.onclick=()=>viewAccount(c.dataset.ac, c.dataset.nm, "7d"));
+}
+
+async function viewAccount(acId, acName, range){
+  currentAcc={id:acId,name:acName};
+  const {totals:t, rows} = await fetchAccountReport(acId, range);
+  const ranges = ["1h","1d","7d","30d","all"];
+  V.innerHTML = `
+    <div class="crumb"><a id="home">Business Centers</a><span class="sep">/</span><a id="back">${currentBC.name}</a><span class="sep">/</span><span>${acName}</span></div>
+    <div class="hd">${acName}</div>
+    <div class="sub">Ad account · ${LABEL[range]}</div>
+    <div class="ranges" id="acRanges">${ranges.map(r=>`<button data-r="${r}" class="${r===range?'on':''}">${r==='all'?'All':r.toUpperCase()}</button>`).join("")}</div>
+    <div class="metrics">
+      <div class="m"><div class="k">Spend</div><div class="v">${usd(t.spend)}</div></div>
+      <div class="m"><div class="k">Impr.</div><div class="v">${num(t.impr)}</div></div>
+      <div class="m"><div class="k">Clicks</div><div class="v">${num(t.clicks)}</div></div>
+      <div class="m"><div class="k">CTR</div><div class="v">${t.ctr.toFixed(2)}%</div></div>
+      <div class="m"><div class="k">CPC</div><div class="v">${usd(t.cpc)}</div></div>
+      <div class="m"><div class="k">CPM</div><div class="v">${usd(t.cpm)}</div></div>
+      <div class="m"><div class="k">Conv.</div><div class="v">${num(t.conv)}</div></div>
+      <div class="m"><div class="k">Cost/conv</div><div class="v">${usd(t.costConv)}</div></div>
+    </div>
+    <div class="tbl-scroll"><table>
+      <thead><tr><th>Campaign</th><th>Status</th><th>Spend</th><th>Impr.</th><th>Clicks</th><th>CTR</th><th>CPC</th><th>CPM</th><th>Conv.</th><th>Cost/conv</th></tr></thead>
+      <tbody>${rows.map(c=>`<tr>
+        <td>${c.name}</td>
+        <td style="text-align:left"><span class="badge ${c.status==='live'?'b-live':'b-pause'}">${c.status==='live'?'Live':'Paused'}</span></td>
+        <td>${usd(c.spend)}</td><td>${num(c.impr)}</td><td>${num(c.clicks)}</td><td>${c.ctr.toFixed(2)}%</td>
+        <td>${usd(c.cpc)}</td><td>${usd(c.cpm)}</td><td>${num(c.conv)}</td>
+        <td class="${c.costConv<1.3?'g':c.costConv>1.6?'w':''}">${usd(c.costConv)}</td></tr>`).join("")}</tbody>
+    </table></div>`;
+  V.querySelector("#home").onclick=viewBCs;
+  V.querySelector("#back").onclick=()=>viewAccounts(currentBC.id, currentBC.name);
+  V.querySelectorAll("#acRanges button").forEach(b=>b.onclick=()=>viewAccount(acId, acName, b.dataset.r));
+}
+
+/* ---------- auth ---------- */
+function showApp(){ document.getElementById("login").style.display="none"; document.getElementById("app").style.display="block"; viewBCs(); }
+function signOut(){ sessionStorage.removeItem("azul_token"); token="";
+  document.getElementById("app").style.display="none"; document.getElementById("login").style.display="flex"; }
+document.getElementById("loginForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const email=document.getElementById("email").value.trim(), pw=document.getElementById("pw").value;
+  const err=document.getElementById("err"); err.textContent="";
+  if(API_BASE){
+    try{
+      const res=await fetch(`${API_BASE}/api/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password:pw})});
+      if(!res.ok){ err.textContent="Invalid email or password."; return; }
+      token=(await res.json()).token; sessionStorage.setItem("azul_token",token); showApp();
+    }catch(_){ err.textContent="Could not reach the server."; }
+  } else {
+    if(email==="you@azul-networks.com" && pw==="demo1234"){ token="demo"; sessionStorage.setItem("azul_token","demo"); showApp(); }
+    else err.textContent="Invalid email or password.";
+  }
+});
+document.getElementById("signout").addEventListener("click", signOut);
+if(API_BASE) document.getElementById("loginHint").textContent="Enter your dashboard credentials";
+if(token) showApp();
+</script>
+</body>
+</html>

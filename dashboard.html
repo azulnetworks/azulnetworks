@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Azul Networks — Ads Dashboard</title>
+<meta name="theme-color" content="#07060B" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#07060B;--line:rgba(168,148,255,.14);--line-strong:rgba(168,148,255,.30);
+    --violet:#8B5CF6;--violet-bright:#A78BFA;--magenta:#C026D3;--gold:#c9a45a;
+    --text:#ECE9F7;--muted:#8E89A8;--dim:#6b6788;--good:#34D399;--warn:#FBBF24;--bad:#F87171;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(125% 80% at 50% -8%, #190f33 0%, #0b0817 42%, #07060B 78%),var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+  #aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  #aura .blob{position:absolute;border-radius:50%;filter:blur(95px);mix-blend-mode:screen;opacity:.4}
+  #aura .b1{width:52vw;height:52vw;left:-8vw;top:-12vh;background:radial-gradient(circle,rgba(139,92,246,.6),transparent 68%)}
+  #aura .b2{width:46vw;height:46vw;right:-10vw;bottom:-14vh;background:radial-gradient(circle,rgba(192,38,211,.38),transparent 68%)}
+  #aura .b3{width:40vw;height:40vw;left:30%;bottom:-20vh;background:radial-gradient(circle,rgba(201,164,90,.12),transparent 70%)}
+  .mono{font-family:"JetBrains Mono",monospace}
+  h1,h2,h3{font-family:"Space Grotesk",sans-serif;font-weight:600;letter-spacing:-.02em}
+  a{color:inherit}
+
+  /* LOGIN */
+  #login{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:24px}
+  .lg-card{position:relative;width:100%;max-width:400px;padding:36px 32px;border-radius:22px;border:1px solid var(--line-strong);background:linear-gradient(180deg,rgba(26,21,42,.78),rgba(12,10,20,.72));backdrop-filter:blur(18px);box-shadow:0 50px 120px -50px rgba(0,0,0,.92)}
+  .lg-hud{font-family:"JetBrains Mono";font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:7px;margin-bottom:20px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 9px var(--good)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:32px;height:32px;flex:none;border-radius:8px;background:linear-gradient(135deg,#2f7de0,#8B5CF6 55%,#C026D3);box-shadow:0 0 16px rgba(139,92,246,.5)}
+  .brand b{font-family:"Space Grotesk";font-weight:600;font-size:1.12rem;color:#F4F4F7}
+  .lg-h{font-size:1.4rem;color:#fff;margin:16px 0 4px}
+  .lg-sub{font-size:.86rem;color:var(--muted);margin-bottom:22px}
+  label.f{font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#9C97B8;display:block;margin:0 0 6px}
+  input.f{width:100%;height:44px;padding:0 14px;margin-bottom:16px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-family:"Inter";font-size:.95rem}
+  input.f:focus{outline:none;border-color:rgba(167,139,250,.6);box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+  .btn{width:100%;height:46px;border:0;border-radius:12px;background:#fff;color:#0B0813;font-family:"Space Grotesk";font-weight:600;font-size:.95rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,box-shadow .2s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px -14px rgba(167,139,250,.5)}
+  .lg-err{color:var(--bad);font-size:.82rem;margin-top:12px;min-height:18px}
+  .lg-foot{margin-top:16px;text-align:center;font-size:.76rem;color:var(--dim)}
+
+  /* APP */
+  #app{display:none;position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:26px 22px 60px}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:14px}
+  .pill{font-family:"JetBrains Mono";font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+  .signout{background:none;border:1px solid var(--line);color:var(--muted);font-size:.82rem;padding:7px 13px;border-radius:9px;cursor:pointer}
+  .signout:hover{border-color:var(--line-strong);color:var(--text)}
+
+  /* BALANCE BANNER */
+  .nav{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);margin-bottom:22px;width:max-content}
+  .nav a{font-family:"JetBrains Mono";font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:8px 14px;border-radius:9px;transition:.2s}
+  .nav a:hover{color:var(--text)}
+  .nav a.on{background:linear-gradient(180deg,rgba(139,92,246,.28),rgba(139,92,246,.14));color:#fff;box-shadow:0 0 0 1px rgba(168,148,255,.3) inset}
+  .balance{border-radius:16px;padding:20px 22px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;border:1px solid var(--line)}
+  .balance.low{border-color:rgba(251,191,36,.32);background:linear-gradient(180deg,rgba(30,22,10,.5),rgba(14,11,6,.42))}
+  .balance.critical{border-color:rgba(248,113,113,.4);background:linear-gradient(180deg,rgba(30,10,10,.5),rgba(14,6,6,.42))}
+  .balance.healthy{border-color:rgba(52,211,153,.28);background:linear-gradient(180deg,rgba(10,26,20,.5),rgba(6,14,11,.42))}
+  .bal-k{font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:7px}
+  .bal-v{font-family:"Space Grotesk";font-weight:600;font-size:2rem;color:#F4F4F7;letter-spacing:-.02em;margin-top:6px}
+  .bal-run{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:.9rem}
+  .bal-bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:14px;width:260px;max-width:60vw;overflow:hidden}
+  .bal-bar>span{display:block;height:100%;border-radius:4px}
+  .btn-topup{background:#fff;color:#0B0813;border:0;font-family:"Space Grotesk";font-weight:600;font-size:.9rem;padding:12px 18px;border-radius:12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s;white-space:nowrap;text-decoration:none}
+  .btn-topup:hover{transform:translateY(-2px);box-shadow:0 16px 40px -14px rgba(167,139,250,.4)}
+
+  .ranges{display:inline-flex;padding:4px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02);gap:2px;margin-bottom:22px;flex-wrap:wrap}
+  .ranges button{background:none;border:0;color:var(--muted);font-family:"JetBrains Mono";font-size:.72rem;letter-spacing:.06em;padding:8px 14px;border-radius:9px;cursor:pointer;transition:.2s}
+  .ranges button:hover{color:var(--text)}
+  .ranges button.on{background:linear-gradient(180deg,rgba(139,92,246,.28),rgba(139,92,246,.14));color:#fff;box-shadow:0 0 0 1px rgba(168,148,255,.3) inset}
+
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+  .m{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,rgba(18,15,30,.5),rgba(11,9,18,.42))}
+  .m .k{font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .m .v{font-family:"Space Grotesk";font-size:1.55rem;font-weight:600;color:#F4F4F7;margin-top:7px;letter-spacing:-.01em}
+  .m.accent{border-color:rgba(167,139,250,.4)}
+  .m.accent .v{color:var(--violet-bright)}
+
+  .panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(18,15,30,.5),rgba(11,9,18,.42));padding:20px 22px;margin-bottom:22px}
+  .panel h3{font-size:1rem;color:#F4F4F7;margin-bottom:4px}
+  .panel .cap{font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  .chart-wrap{position:relative;width:100%;height:210px}
+
+  .tbl-scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;min-width:840px}
+  thead th{font-family:"JetBrains Mono";font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:400;text-align:right;padding:0 10px 12px}
+  thead th:first-child{text-align:left}
+  tbody td{padding:13px 10px;text-align:right;color:#D9D6E6;border-top:1px solid rgba(168,148,255,.08);white-space:nowrap}
+  tbody td:first-child{text-align:left;color:#F4F4F7}
+  .badge{font-family:"JetBrains Mono";font-size:.6rem;letter-spacing:.06em;padding:3px 9px;border-radius:20px}
+  .b-live{background:rgba(52,211,153,.14);color:var(--good)}
+  .b-pause{background:rgba(251,191,36,.14);color:var(--warn)}
+  .g{color:var(--good)}.w{color:var(--warn)}
+
+  @media(max-width:560px){.ranges{width:100%;justify-content:space-between}}
+</style>
+</head>
+<body>
+<div id="aura" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<!-- LOGIN -->
+<div id="login">
+  <form class="lg-card" id="loginForm" autocomplete="on">
+    <div class="lg-hud"><span class="dot"></span>Agents ● online</div>
+    <div class="brand"><span class="logo"></span><b>Azul Networks</b></div>
+    <div class="lg-h">Welcome back.</div>
+    <div class="lg-sub">Sign in to your ads dashboard.</div>
+    <label class="f" for="email">Email</label>
+    <input class="f" id="email" type="email" placeholder="you@azul-networks.com" required />
+    <label class="f" for="pw">Password</label>
+    <input class="f" id="pw" type="password" placeholder="••••••••" required />
+    <button class="btn" type="submit">Sign in <span aria-hidden="true">→</span></button>
+    <div class="lg-err" id="err"></div>
+    <div class="lg-foot" id="loginHint">Demo: you@azul-networks.com / demo1234</div>
+  </form>
+</div>
+
+<!-- DASHBOARD -->
+<div id="app">
+  <div class="top">
+    <div class="brand"><span class="logo"></span><div><b style="display:block">Ads Engine</b><span class="pill">Solo · Frankfurt</span></div></div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <span class="pill"><span class="dot"></span>Agents ● online</span>
+      <button class="signout" id="signout">Sign out</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <a class="on">Overview</a>
+    <a href="accounts.html">Business Centers</a>
+  </div>
+
+  <div class="balance" id="balance"></div>
+
+  <div class="ranges" id="ranges">
+    <button data-r="1h">1H</button>
+    <button data-r="1d">1D</button>
+    <button data-r="7d" class="on">7D</button>
+    <button data-r="30d">30D</button>
+    <button data-r="all">All time</button>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="panel">
+    <h3>Spend</h3>
+    <div class="cap" id="chartCap">Last 7 days</div>
+    <div class="chart-wrap"><canvas id="spendChart" role="img" aria-label="Spend over the selected time range"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h3>Campaigns</h3>
+    <div class="cap">Per-campaign performance</div>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr>
+          <th>Campaign</th><th>Status</th><th>Spend</th><th>Impr.</th><th>Clicks</th>
+          <th>CTR</th><th>CPC</th><th>CPM</th><th>Conv.</th><th>Cost/conv</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ============================================================
+   CONFIG — set API_BASE to your deployed backend to use live data.
+   Leave "" to run in demo mode with the sample numbers below.
+   ============================================================ */
+const API_BASE = ""; // e.g. "https://your-app.vercel.app"
+const TOPUP_URL = "https://ads.tiktok.com/i18n/account/payment";
+const LOW_BALANCE_DAYS = 5;      // amber below this many days of runway
+const CRITICAL_BALANCE_DAYS = 3; // red below this
+
+/* ---- demo data (all-time base per campaign); scaled per range ---- */
+const CAMPAIGNS = [
+  {name:"US Freecash CPI",    status:"live",  impr:1980000, clicks:47200, spend:742.0, conv:668},
+  {name:"UK Reco Social",     status:"live",  impr:1640000, clicks:39100, spend:814.0, conv:641},
+  {name:"CA Playful Rewards", status:"pause", impr: 520000, clicks:11800, spend:407.0, conv:281},
+  {name:"AU Block Puzzle",    status:"live",  impr: 910000, clicks:20400, spend:321.5, conv:248},
+];
+const DEMO_BALANCE = 248.50;
+const RANGE = {"1h":0.004,"1d":0.03,"7d":0.20,"30d":0.72,"all":1};
+const LABEL = {"1h":"Last hour","1d":"Last 24 hours","7d":"Last 7 days","30d":"Last 30 days","all":"All time"};
+const POINTS = {"1h":12,"1d":12,"7d":7,"30d":10,"all":12};
+
+const usd = v => "$"+Number(v).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = v => Math.round(Number(v)).toLocaleString("en-US");
+const pct = v => Number(v).toFixed(2)+"%";
+let chart, token = sessionStorage.getItem("azul_token") || "";
+
+/* ---- demo compute ---- */
+function demoRows(r){
+  const f = RANGE[r];
+  return CAMPAIGNS.map(c=>{
+    const impr=c.impr*f, clicks=c.clicks*f, spend=c.spend*f, conv=c.conv*f;
+    return {name:c.name,status:c.status,impr,clicks,spend,conv,
+      ctr:impr?clicks/impr*100:0, cpc:clicks?spend/clicks:0,
+      cpm:impr?spend/impr*1000:0, costConv:conv?spend/conv:0};
+  });
+}
+function totals(rows){
+  const t=rows.reduce((a,c)=>({impr:a.impr+c.impr,clicks:a.clicks+c.clicks,spend:a.spend+c.spend,conv:a.conv+c.conv}),{impr:0,clicks:0,spend:0,conv:0});
+  t.cpc=t.clicks?t.spend/t.clicks:0; t.cpm=t.impr?t.spend/t.impr*1000:0;
+  t.ctr=t.impr?t.clicks/t.impr*100:0; t.costConv=t.conv?t.spend/t.conv:0;
+  return t;
+}
+function makeSeries(total,n){
+  const a=[]; let s=0;
+  for(let i=0;i<n;i++){ const w=0.7+0.6*Math.abs(Math.sin(i*1.7+2)); a.push(w); s+=w; }
+  return a.map(w=>+(w/s*total).toFixed(2));
+}
+
+/* ---- data source: live backend or demo ---- */
+async function loadData(r){
+  if(API_BASE){
+    const res = await fetch(`${API_BASE}/api/report?range=${r}`, { headers:{ Authorization:`Bearer ${token}` } });
+    if(res.status===401){ signOut(); throw new Error("session expired"); }
+    return await res.json(); // { rows, series, labels, balance }
+  }
+  // demo
+  const rows = demoRows(r), t = totals(rows), n = POINTS[r];
+  return {
+    rows, totals:t,
+    series: makeSeries(t.spend,n),
+    labels: Array.from({length:n},(_,i)=> r==="1h"?(i*5)+"m" : r==="1d"?(i*2)+"h" : "P"+(i+1)),
+    balance: { cash: DEMO_BALANCE, avgDailySpend: totals(demoRows("7d")).spend/7 }
+  };
+}
+
+function renderBalance(bal){
+  const el = document.getElementById("balance");
+  const runway = bal.avgDailySpend ? bal.cash/bal.avgDailySpend : Infinity;
+  const state = runway < CRITICAL_BALANCE_DAYS ? "critical" : runway < LOW_BALANCE_DAYS ? "low" : "healthy";
+  const color = state==="critical" ? "var(--bad)" : state==="low" ? "var(--warn)" : "var(--good)";
+  const icon  = state==="healthy" ? "circle-check" : "alert-triangle";
+  const word  = state==="healthy" ? "healthy" : state==="low" ? "low" : "critical";
+  const barPct = Math.max(4, Math.min(100, runway/14*100));
+  el.className = "balance "+state;
+  el.innerHTML = `
+    <div>
+      <div class="bal-k" style="color:${color}"><i class="ti ti-${icon}" style="font-size:14px" aria-hidden="true"></i>Balance · ${word}</div>
+      <div class="bal-v">${usd(bal.cash)}</div>
+      <div class="bal-run" style="color:${color}"><i class="ti ti-clock" style="font-size:16px" aria-hidden="true"></i>${isFinite(runway)?`~${Math.round(runway)} days left at ${usd(bal.avgDailySpend)}/day`:"No recent spend"}</div>
+      <div class="bal-bar" aria-hidden="true"><span style="width:${barPct}%;background:${color}"></span></div>
+    </div>
+    <a class="btn-topup" href="${TOPUP_URL}" target="_blank" rel="noopener">Top up now <i class="ti ti-external-link" style="font-size:15px" aria-hidden="true"></i></a>`;
+}
+
+async function render(r){
+  let data;
+  try { data = await loadData(r); }
+  catch(e){ return; }
+  const rows = data.rows, t = data.totals || totals(rows);
+
+  document.getElementById("metrics").innerHTML = `
+    <div class="m"><div class="k">Spend</div><div class="v">${usd(t.spend)}</div></div>
+    <div class="m"><div class="k">Impressions</div><div class="v">${num(t.impr)}</div></div>
+    <div class="m"><div class="k">Clicks</div><div class="v">${num(t.clicks)}</div></div>
+    <div class="m"><div class="k">Conversions</div><div class="v">${num(t.conv)}</div></div>
+    <div class="m"><div class="k">Avg CPC</div><div class="v">${usd(t.cpc)}</div></div>
+    <div class="m"><div class="k">Avg CPM</div><div class="v">${usd(t.cpm)}</div></div>
+    <div class="m accent"><div class="k">Cost / conv</div><div class="v">${usd(t.costConv)}</div></div>`;
+
+  document.getElementById("rows").innerHTML = rows.map(c=>`
+    <tr>
+      <td>${c.name}</td>
+      <td style="text-align:left"><span class="badge ${c.status==='live'?'b-live':'b-pause'}">${c.status==='live'?'Live':'Paused'}</span></td>
+      <td>${usd(c.spend)}</td>
+      <td>${num(c.impr)}</td>
+      <td>${num(c.clicks)}</td>
+      <td>${pct(c.ctr)}</td>
+      <td>${usd(c.cpc)}</td>
+      <td>${usd(c.cpm)}</td>
+      <td>${num(c.conv)}</td>
+      <td class="${c.costConv<1.3?'g':c.costConv>1.6?'w':''}">${usd(c.costConv)}</td>
+    </tr>`).join("");
+
+  if(data.balance) renderBalance(data.balance);
+  document.getElementById("chartCap").textContent = LABEL[r];
+
+  if(chart) chart.destroy();
+  chart = new Chart(document.getElementById("spendChart"),{
+    type:"line",
+    data:{labels:data.labels,datasets:[{data:data.series,borderColor:"#A78BFA",backgroundColor:"rgba(139,92,246,.14)",fill:true,tension:.35,borderWidth:2,pointRadius:0,pointHoverRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>usd(c.parsed.y)}}},
+      scales:{y:{beginAtZero:true,grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"#8E89A8"}},x:{grid:{display:false},ticks:{color:"#8E89A8"}}}}
+  });
+}
+
+/* ---- auth ---- */
+function showApp(){ document.getElementById("login").style.display="none"; document.getElementById("app").style.display="block";
+  document.querySelector(".ranges button.on").click(); }
+function signOut(){ sessionStorage.removeItem("azul_token"); token="";
+  document.getElementById("app").style.display="none"; document.getElementById("login").style.display="flex"; }
+
+document.getElementById("loginForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const email=document.getElementById("email").value.trim(), pw=document.getElementById("pw").value;
+  const err=document.getElementById("err"); err.textContent="";
+  if(API_BASE){
+    try{
+      const res = await fetch(`${API_BASE}/api/login`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({email,password:pw}) });
+      if(!res.ok){ err.textContent="Invalid email or password."; return; }
+      const j = await res.json(); token=j.token; sessionStorage.setItem("azul_token",token); showApp();
+    }catch(_){ err.textContent="Could not reach the server."; }
+  } else {
+    if(email==="you@azul-networks.com" && pw==="demo1234"){ sessionStorage.setItem("azul_token","demo"); token="demo"; showApp(); }
+    else err.textContent="Invalid email or password.";
+  }
+});
+document.getElementById("signout").addEventListener("click", signOut);
+document.querySelectorAll("#ranges button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#ranges button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); render(b.dataset.r);
+}));
+if(API_BASE) document.getElementById("loginHint").textContent = "Enter your dashboard credentials";
+if(token) showApp();
+</script>
+</body>
+</html>
