@@ -14,6 +14,18 @@ async function call(path, params) {
   return json.data;
 }
 
+// POST helper for write endpoints (create / update / share). Same 200-with-code contract.
+async function post(path, body) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "POST",
+    headers: { "Access-Token": TOKEN, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  if (json.code !== 0) throw new Error(`TikTok ${json.code}: ${json.message}`);
+  return json.data;
+}
+
 // Map a UI range to TikTok report date params.
 // Note: TikTok BASIC reports are daily-grained — a true 1-hour view isn't available,
 // so "1h" falls back to today's data.
@@ -139,4 +151,123 @@ async function getBalance(advertiserId = ADV) {
   }
 }
 
-module.exports = { getReport, getBalance, getBusinessCenters, getAccounts };
+// ─── Drill-down reads ──────────────────────────────────────────────────────
+
+// Campaigns under an ad account (id, name, status, objective, budget).
+async function getCampaigns(advertiserId) {
+  const data = await call("/campaign/get/", {
+    advertiser_id: advertiserId, page: "1", page_size: "100",
+  });
+  return (data.list || []).map(c => ({
+    id: c.campaign_id,
+    name: c.campaign_name,
+    status: (c.operation_status || c.secondary_status || "").toUpperCase().includes("DISABLE") ? "pause" : "live",
+    objective: c.objective_type || "",
+    budgetMode: c.budget_mode || "",
+    budget: Number(c.budget || 0),
+  }));
+}
+
+// Ad groups under a campaign.
+async function getAdgroups(advertiserId, campaignId) {
+  const data = await call("/adgroup/get/", {
+    advertiser_id: advertiserId,
+    filtering: JSON.stringify({ campaign_ids: [campaignId] }),
+    page: "1", page_size: "100",
+  });
+  return (data.list || []).map(g => ({
+    id: g.adgroup_id,
+    name: g.adgroup_name,
+    status: (g.operation_status || g.secondary_status || "").toUpperCase().includes("DISABLE") ? "pause" : "live",
+    budgetMode: g.budget_mode || "",
+    budget: Number(g.budget || 0),
+  }));
+}
+
+// Ads under an ad group.
+async function getAds(advertiserId, adgroupId) {
+  const data = await call("/ad/get/", {
+    advertiser_id: advertiserId,
+    filtering: JSON.stringify({ adgroup_ids: [adgroupId] }),
+    page: "1", page_size: "100",
+  });
+  return (data.list || []).map(a => ({
+    id: a.ad_id,
+    name: a.ad_name,
+    status: (a.operation_status || a.secondary_status || "").toUpperCase().includes("DISABLE") ? "pause" : "live",
+  }));
+}
+
+// Pixels available to an ad account (for the sharing UI and campaign creation).
+async function getPixels(advertiserId) {
+  const data = await call("/pixel/list/", {
+    advertiser_id: advertiserId, page: "1", page_size: "100",
+  });
+  return (data.pixels || data.list || []).map(p => ({
+    id: p.pixel_id || p.pixel_code,
+    name: p.pixel_name || p.name || (p.pixel_id || p.pixel_code),
+  }));
+}
+
+// ─── Writes ────────────────────────────────────────────────────────────────
+
+// Enable / disable a campaign, ad group, or ad.
+// level: "campaign" | "adgroup" | "ad". enable: boolean. ids: string[].
+async function setStatus({ level, advertiserId = ADV, ids, enable }) {
+  const idList = Array.isArray(ids) ? ids : [ids];
+  const op = enable ? "ENABLE" : "DISABLE";
+  const path = { campaign: "/campaign/status/update/", adgroup: "/adgroup/status/update/", ad: "/ad/status/update/" }[level];
+  if (!path) throw new Error(`unknown level: ${level}`);
+  const idField = { campaign: "campaign_ids", adgroup: "adgroup_ids", ad: "ad_ids" }[level];
+  return post(path, { advertiser_id: advertiserId, [idField]: idList, operation_status: op });
+}
+
+// Create a campaign shell. Ad groups / ads / creatives are created separately
+// (they need identity + video assets), so this returns the new campaign_id.
+// p: { advertiserId, name, objective, budgetMode, budget, cbo }
+async function createCampaign(p) {
+  const body = {
+    advertiser_id: p.advertiserId || ADV,
+    campaign_name: p.name,
+    objective_type: p.objective,                 // e.g. CONVERSIONS, TRAFFIC, REACH, VIDEO_VIEWS
+    budget_mode: p.budgetMode || "BUDGET_MODE_INFINITE",
+  };
+  if (body.budget_mode !== "BUDGET_MODE_INFINITE" && p.budget) body.budget = Number(p.budget);
+  // CBO = campaign-level budget optimization (budget lives on the campaign, split across ad groups).
+  if (p.cbo) body.budget_optimize_on = true;
+  const data = await post("/campaign/create/", body);
+  return { campaignId: data.campaign_id };
+}
+
+// "Duplicate" — TikTok has no native duplicate, so read the source campaign's
+// settings and create a fresh campaign that mirrors them. Ad groups/ads are not
+// recreated here (they carry creatives/identities that can't be blindly cloned).
+async function duplicateCampaign({ advertiserId = ADV, campaignId }) {
+  const data = await call("/campaign/get/", {
+    advertiser_id: advertiserId,
+    filtering: JSON.stringify({ campaign_ids: [campaignId] }),
+    page: "1", page_size: "1",
+  });
+  const src = (data.list || [])[0];
+  if (!src) throw new Error("source campaign not found");
+  return createCampaign({
+    advertiserId,
+    name: `${src.campaign_name} (copy)`,
+    objective: src.objective_type,
+    budgetMode: src.budget_mode,
+    budget: src.budget,
+    cbo: !!src.budget_optimize_on,
+  });
+}
+
+// Share a pixel from one ad account to others in the same Business Center.
+async function sharePixel({ bcId, pixelId, advertiserIds }) {
+  const ids = Array.isArray(advertiserIds) ? advertiserIds : [advertiserIds];
+  return post("/bc/pixel/link/", { bc_id: bcId, pixel_id: pixelId, advertiser_ids: ids });
+}
+
+module.exports = {
+  getReport, getBalance, getBusinessCenters, getAccounts,
+  getCampaigns, getAdgroups, getAds, getPixels,
+  setStatus, createCampaign, duplicateCampaign, sharePixel,
+};
