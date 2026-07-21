@@ -96,6 +96,38 @@
   .g{color:var(--good)}.w{color:var(--warn)}
 
   @media(max-width:560px){.ranges{width:100%;justify-content:space-between}}
+
+  /* MANAGE */
+  .mbtn{background:rgba(139,92,246,.12);border:1px solid var(--line-strong);color:var(--text);font-family:"Space Grotesk";font-weight:600;font-size:.8rem;padding:8px 13px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.2s;white-space:nowrap}
+  .mbtn:hover{background:rgba(139,92,246,.22)}
+  .mbtn.sm{font-size:.72rem;padding:6px 10px}
+  .mbtn.primary{background:#fff;color:#0B0813;border-color:transparent}
+  .mbtn.primary:hover{transform:translateY(-1px);box-shadow:0 14px 34px -14px rgba(167,139,250,.5)}
+  .mbtn i{font-style:normal;font-size:1rem;line-height:1}
+  .trow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:linear-gradient(180deg,rgba(20,16,32,.5),rgba(12,10,20,.4));flex-wrap:wrap}
+  .trow.lvl-campaign{border-color:var(--line-strong)}
+  .tmain{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+  .tlabel{display:flex;flex-direction:column;min-width:0}
+  .tname{color:#F4F4F7;font-size:.92rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tkind{font-family:"JetBrains Mono";font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+  .tctrls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .chev{background:none;border:0;color:var(--muted);cursor:pointer;font-size:.85rem;transition:transform .2s;width:22px;height:22px;display:grid;place-items:center;border-radius:6px;flex:none}
+  .chev:hover{background:rgba(139,92,246,.14);color:var(--text)}
+  .chev.open{transform:rotate(90deg);color:var(--violet-bright)}
+  .chev-sp{width:22px;flex:none}
+  .children{margin-left:24px;padding-left:12px;border-left:1px solid rgba(168,148,255,.14)}
+  .tgl{width:42px;height:24px;border-radius:20px;border:1px solid var(--line-strong);background:rgba(255,255,255,.06);position:relative;cursor:pointer;transition:.2s;flex:none;padding:0}
+  .tgl .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#cfc9e6;transition:.2s}
+  .tgl.on{background:linear-gradient(180deg,rgba(52,211,153,.5),rgba(52,211,153,.3));border-color:rgba(52,211,153,.5)}
+  .tgl.on .knob{left:20px;background:#eafff5}
+  .bc-form{margin-top:14px;border-top:1px solid rgba(168,148,255,.12);padding-top:16px}
+  .bc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .f2{width:100%;height:42px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-family:"Inter";font-size:.9rem}
+  .f2:focus{outline:none;border-color:rgba(167,139,250,.6);box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+  .bc-actions{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
+  .bc-note{font-size:.76rem;color:var(--dim);max-width:52ch}
+  .bc-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+  .bc-empty{font-size:.85rem;color:var(--dim);padding:6px 0 4px}
 </style>
 </head>
 <body>
@@ -129,9 +161,12 @@
   </div>
 
   <div class="nav">
-    <a class="on">Overview</a>
+    <a class="on" data-view="overview">Overview</a>
+    <a data-view="manage">Manage</a>
     <a href="accounts.html">Business Centers</a>
   </div>
+
+  <div id="view-overview">
 
   <div class="balance" id="balance"></div>
 
@@ -162,6 +197,38 @@
         </tr></thead>
         <tbody id="rows"></tbody>
       </table>
+    </div>
+  </div>
+
+  </div><!-- /view-overview -->
+
+  <div id="view-manage" style="display:none">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div>
+          <h3>Campaign manager</h3>
+          <div class="cap" style="margin-bottom:0">Activate / pause &amp; duplicate — click a row to drill into ad groups, then ads</div>
+        </div>
+        <button class="mbtn" id="newCampaign"><i>+</i> New campaign</button>
+      </div>
+      <div id="tree" style="margin-top:14px"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Connect a Business Center</h3>
+      <div class="cap">Link a TikTok Business Center to the dashboard via the Marketing API</div>
+      <div id="bcList"></div>
+      <form id="bcForm" class="bc-form" autocomplete="off">
+        <div class="bc-grid">
+          <div><label class="f" for="bcId">Business Center ID</label><input class="f2" id="bcId" placeholder="e.g. 7012345678901234567" /></div>
+          <div><label class="f" for="bcName">Display name</label><input class="f2" id="bcName" placeholder="e.g. Azul BC · US" /></div>
+          <div><label class="f" for="bcToken">Access token (optional)</label><input class="f2" id="bcToken" type="password" placeholder="Leave blank to use the server token" /></div>
+        </div>
+        <div class="bc-actions">
+          <button class="mbtn primary" type="submit">Connect Business Center</button>
+          <span class="bc-note">Demo mode keeps this in your browser only and never stores the token. In live mode this posts to your Vercel backend over HTTPS, where the token stays server-side.</span>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -321,6 +388,119 @@ document.querySelectorAll("#ranges button").forEach(b=>b.addEventListener("click
 }));
 if(API_BASE) document.getElementById("loginHint").textContent = "Enter your dashboard credentials";
 if(token) showApp();
+</script>
+
+<script>
+/* ============================================================
+   MANAGE — campaign / ad group / ad tree with activate-pause +
+   duplicate, plus a Business Center connect form.
+   Demo mode edits local state. To go live, POST these actions to
+   your backend (e.g. /api/campaign/status, /api/campaign/duplicate,
+   /api/business-centers) which call the TikTok Marketing API.
+   ============================================================ */
+const MANAGE = [
+  {id:"c1", name:"US Freecash CPI", status:"live", groups:[
+    {id:"g1", name:"US · 18-34 · Broad",        status:"live",  ads:[
+      {id:"a1", name:"Hook A — UGC unboxing",  status:"live"},
+      {id:"a2", name:"Hook B — Cash payout",   status:"live"}]},
+    {id:"g2", name:"US · 25-44 · Lookalike 2%", status:"pause", ads:[
+      {id:"a3", name:"Static — $500 offer",    status:"pause"}]}]},
+  {id:"c2", name:"UK Reco Social", status:"live", groups:[
+    {id:"g3", name:"UK · 18-30 · Interest",     status:"live",  ads:[
+      {id:"a4", name:"Hook A — Testimonial",   status:"live"},
+      {id:"a5", name:"Hook C — Screen record", status:"pause"}]}]},
+  {id:"c3", name:"CA Playful Rewards", status:"pause", groups:[
+    {id:"g4", name:"CA · Broad",                status:"pause", ads:[
+      {id:"a6", name:"Static — Puzzle promo",  status:"pause"}]}]},
+  {id:"c4", name:"AU Block Puzzle", status:"live", groups:[
+    {id:"g5", name:"AU · 21-40 · Gaming",       status:"live",  ads:[
+      {id:"a7", name:"Hook A — Level clip",    status:"live"}]}]},
+];
+let uid = 100;
+const expanded = new Set();
+
+function findNode(id){
+  for(const c of MANAGE){ if(c.id===id) return {item:c,arr:MANAGE};
+    for(const g of c.groups){ if(g.id===id) return {item:g,arr:c.groups};
+      for(const a of g.ads){ if(a.id===id) return {item:a,arr:g.ads}; } } }
+  return null;
+}
+function reid(n){ n.id="x"+(uid++); (n.groups||[]).forEach(reid); (n.ads||[]).forEach(reid); }
+function tglHTML(id,on){
+  return `<button class="tgl ${on?'on':''}" data-toggle="${id}" role="switch" aria-checked="${on}" title="${on?'Active — click to pause':'Paused — click to activate'}"><span class="knob"></span></button>`;
+}
+function rowHTML(kind,item,open){
+  const on = item.status==='live';
+  const kids = kind==='campaign'?item.groups.length+' ad groups':kind==='group'?item.ads.length+' ads':'';
+  const chev = kind==='ad' ? '<span class="chev-sp"></span>'
+    : `<button class="chev ${open?'open':''}" data-expand="${item.id}" aria-label="Expand">▸</button>`;
+  const meta = kind==='campaign'?'Campaign':kind==='group'?'Ad group':'Ad';
+  return `<div class="trow lvl-${kind}">
+    <div class="tmain">${chev}
+      <div class="tlabel"><span class="tname">${item.name}</span><span class="tkind">${meta}${kids?' · '+kids:''}</span></div>
+    </div>
+    <div class="tctrls">
+      <span class="badge ${on?'b-live':'b-pause'}">${on?'Active':'Paused'}</span>
+      ${tglHTML(item.id,on)}
+      <button class="mbtn sm" data-dup="${item.id}" title="Duplicate">⧉ Duplicate</button>
+    </div>
+  </div>`;
+}
+function renderTree(){
+  const t=document.getElementById("tree");
+  t.innerHTML = MANAGE.map(c=>{
+    let inner="";
+    if(expanded.has(c.id)){
+      inner = `<div class="children">`+ c.groups.map(g=>{
+        let gi="";
+        if(expanded.has(g.id)) gi = `<div class="children">`+ g.ads.map(a=>rowHTML("ad",a,false)).join("") +`</div>`;
+        return rowHTML("group",g,expanded.has(g.id)) + gi;
+      }).join("") +`</div>`;
+    }
+    return rowHTML("campaign",c,expanded.has(c.id)) + inner;
+  }).join("");
+}
+document.getElementById("tree").addEventListener("click", e=>{
+  const ex=e.target.closest("[data-expand]");
+  if(ex){ const id=ex.getAttribute("data-expand"); expanded.has(id)?expanded.delete(id):expanded.add(id); renderTree(); return; }
+  const tg=e.target.closest("[data-toggle]");
+  if(tg){ const n=findNode(tg.getAttribute("data-toggle")); if(n){ n.item.status=n.item.status==='live'?'pause':'live'; renderTree(); } return; }
+  const dp=e.target.closest("[data-dup]");
+  if(dp){ const n=findNode(dp.getAttribute("data-dup")); if(n){ const clone=JSON.parse(JSON.stringify(n.item)); reid(clone); clone.name=n.item.name+" (copy)"; n.arr.splice(n.arr.indexOf(n.item)+1,0,clone); renderTree(); } return; }
+});
+document.getElementById("newCampaign").addEventListener("click",()=>{
+  const c={id:"x"+(uid++),name:"New campaign",status:"pause",groups:[{id:"x"+(uid++),name:"New ad group",status:"pause",ads:[{id:"x"+(uid++),name:"New ad",status:"pause"}]}]};
+  MANAGE.unshift(c); expanded.add(c.id); renderTree();
+});
+
+/* Business Centers (demo: token value is never retained) */
+const BCS=[];
+function renderBCs(){
+  const el=document.getElementById("bcList");
+  if(!BCS.length){ el.innerHTML=`<div class="bc-empty">No Business Centers connected yet.</div>`; return; }
+  el.innerHTML = BCS.map((b,i)=>`<div class="bc-item"><div class="tlabel"><span class="tname">${b.name}</span><span class="tkind">BC ${b.id} · ${b.tok?'custom token':'server token'}</span></div><button class="mbtn sm" data-bcdel="${i}">Remove</button></div>`).join("");
+}
+document.getElementById("bcForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const id=document.getElementById("bcId").value.trim();
+  if(!id) return;
+  const name=document.getElementById("bcName").value.trim()||("Business Center "+id);
+  const tok=document.getElementById("bcToken").value.trim();
+  BCS.push({id,name,tok:!!tok});   // store only whether a token was given, never the value
+  document.getElementById("bcForm").reset(); renderBCs();
+});
+document.getElementById("bcList").addEventListener("click",e=>{ const d=e.target.closest("[data-bcdel]"); if(d){ BCS.splice(+d.getAttribute("data-bcdel"),1); renderBCs(); }});
+
+/* view switching */
+document.querySelectorAll('.nav [data-view]').forEach(a=>a.addEventListener("click",e=>{
+  e.preventDefault();
+  document.querySelectorAll('.nav a').forEach(x=>x.classList.remove("on"));
+  a.classList.add("on");
+  const v=a.getAttribute("data-view");
+  document.getElementById("view-overview").style.display = v==="overview"?"block":"none";
+  document.getElementById("view-manage").style.display   = v==="manage"?"block":"none";
+  if(v==="manage"){ renderTree(); renderBCs(); }
+}));
 </script>
 </body>
 </html>
