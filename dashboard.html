@@ -128,6 +128,42 @@
   .bc-note{font-size:.76rem;color:var(--dim);max-width:52ch}
   .bc-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
   .bc-empty{font-size:.85rem;color:var(--dim);padding:6px 0 4px}
+  .crumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;font-size:.9rem}
+  .crumb a{color:var(--violet-bright);cursor:pointer}
+  .crumb a:hover{text-decoration:underline}
+  .crumb .c-sep{color:var(--dim)}
+  .crumb .c-here{color:#F4F4F7;font-weight:500}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+  .ecard{text-align:left;border:1px solid var(--line-strong);border-radius:14px;padding:16px;background:linear-gradient(180deg,rgba(20,16,32,.6),rgba(12,10,20,.45));cursor:pointer;color:var(--text);transition:.2s;font-family:inherit}
+  .ecard:hover{border-color:rgba(167,139,250,.6);transform:translateY(-2px);box-shadow:0 18px 40px -22px rgba(139,92,246,.6)}
+  .ec-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .ec-name{font-family:"Space Grotesk";font-weight:600;font-size:1rem;color:#F4F4F7}
+  .ec-go{color:var(--violet-bright);font-size:1.1rem}
+  .ec-sub{font-family:"JetBrains Mono";font-size:.62rem;color:var(--dim);margin-top:5px;letter-spacing:.04em}
+  .ec-meta{font-size:.8rem;color:var(--muted);margin-top:12px}
+  .row-between{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .pix{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px}
+  .pix-h{display:flex;align-items:center;gap:10px;justify-content:space-between}
+  .pix-h .tkind{font-family:"JetBrains Mono";font-size:.6rem;color:var(--dim)}
+  .pix-share{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px}
+  .chk{display:inline-flex;align-items:center;gap:8px;font-size:.85rem;color:#CFCADF;cursor:pointer}
+  .chk input{accent-color:var(--violet);width:16px;height:16px}
+  .mb{margin-bottom:14px}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  @media(max-width:560px){.fgrid{grid-template-columns:1fr}}
+  .pills{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .pill{border:1px solid var(--line-strong);border-radius:10px;padding:9px 14px;font-size:.85rem;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s}
+  .pill:has(input:checked){border-color:rgba(167,139,250,.7);background:rgba(139,92,246,.16);color:#fff}
+  .pill input{accent-color:var(--violet)}
+  select.f2{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 19px,calc(100% - 13px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+  .modal2{position:fixed;inset:0;z-index:60;display:none;align-items:flex-start;justify-content:center;padding:28px 16px;overflow:auto}
+  .modal2.open{display:flex}
+  .modal2-bd{position:fixed;inset:0;background:rgba(4,3,8,.72);backdrop-filter:blur(6px)}
+  .modal2-card{position:relative;z-index:1;width:100%;max-width:640px;margin:auto;border:1px solid var(--line-strong);border-radius:20px;padding:26px 26px 22px;background:linear-gradient(180deg,rgba(22,18,36,.98),rgba(11,9,18,.98));box-shadow:0 50px 130px -40px rgba(0,0,0,.9)}
+  .modal2-x{position:absolute;top:12px;right:16px;background:none;border:0;color:var(--muted);font-size:1.7rem;cursor:pointer;line-height:1}
+  .modal2-x:hover{color:#fff}
+  .modal2-card h3{color:#fff;margin-bottom:4px}
+  .modal2-card .cap{margin-bottom:18px}
 </style>
 </head>
 <body>
@@ -162,8 +198,7 @@
 
   <div class="nav">
     <a class="on" data-view="overview">Overview</a>
-    <a data-view="manage">Manage</a>
-    <a href="accounts.html">Business Centers</a>
+    <a data-view="manage">Business Centers</a>
   </div>
 
   <div id="view-overview">
@@ -203,33 +238,75 @@
   </div><!-- /view-overview -->
 
   <div id="view-manage" style="display:none">
-    <div class="panel">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
-        <div>
-          <h3>Campaign manager</h3>
-          <div class="cap" style="margin-bottom:0">Activate / pause &amp; duplicate — click a row to drill into ad groups, then ads</div>
-        </div>
-        <button class="mbtn" id="newCampaign"><i>+</i> New campaign</button>
-      </div>
-      <div id="tree" style="margin-top:14px"></div>
-    </div>
+    <div id="mgrCrumb" class="crumb"></div>
+    <div id="mgr"></div>
+  </div>
+</div>
 
-    <div class="panel">
-      <h3>Connect a Business Center</h3>
-      <div class="cap">Link a TikTok Business Center to the dashboard via the Marketing API</div>
-      <div id="bcList"></div>
-      <form id="bcForm" class="bc-form" autocomplete="off">
-        <div class="bc-grid">
-          <div><label class="f" for="bcId">Business Center ID</label><input class="f2" id="bcId" placeholder="e.g. 7012345678901234567" /></div>
-          <div><label class="f" for="bcName">Display name</label><input class="f2" id="bcName" placeholder="e.g. Azul BC · US" /></div>
-          <div><label class="f" for="bcToken">Access token (optional)</label><input class="f2" id="bcToken" type="password" placeholder="Leave blank to use the server token" /></div>
-        </div>
-        <div class="bc-actions">
-          <button class="mbtn primary" type="submit">Connect Business Center</button>
-          <span class="bc-note">Demo mode keeps this in your browser only and never stores the token. In live mode this posts to your Vercel backend over HTTPS, where the token stays server-side.</span>
-        </div>
-      </form>
-    </div>
+<!-- NEW CAMPAIGN MODAL -->
+<div class="modal2" id="campModal" aria-hidden="true">
+  <div class="modal2-bd" data-cclose></div>
+  <div class="modal2-card" role="dialog" aria-modal="true" aria-label="New campaign">
+    <button class="modal2-x" data-cclose aria-label="Close">&times;</button>
+    <h3>New campaign</h3>
+    <div class="cap" id="campCtx">Configure the campaign, then it's queued to the selected ad account</div>
+    <form id="campForm" autocomplete="off">
+      <div class="fgrid">
+        <div><label class="f">Business Center</label><select class="f2" id="cfBc"></select></div>
+        <div><label class="f">Ad account</label><select class="f2" id="cfAcct"></select></div>
+      </div>
+      <label class="f">Campaign name</label><input class="f2 mb" id="cfName" placeholder="e.g. US Freecash — CBO Scale" />
+      <div class="fgrid">
+        <div><label class="f">Objective</label><select class="f2" id="cfObjective">
+          <option>Conversions</option><option>Product Sales</option><option>Traffic</option><option>App Promotion</option><option>Lead Generation</option><option>Reach</option><option>Video Views</option>
+        </select></div>
+        <div><label class="f">Optimization event</label><select class="f2" id="cfEvent">
+          <option>Complete Payment</option><option>Purchase</option><option>Registration</option><option>Add to Cart</option><option>Install</option><option>Add Payment Info</option>
+        </select></div>
+      </div>
+
+      <label class="f">Campaign mode</label>
+      <div class="pills">
+        <label class="pill"><input type="radio" name="mode" value="smart" checked/> Smart campaign</label>
+        <label class="pill"><input type="radio" name="mode" value="manual"/> Manual campaign</label>
+      </div>
+
+      <label class="f">Budget level</label>
+      <div class="pills">
+        <label class="pill"><input type="radio" name="blevel" value="cbo" checked/> CBO — campaign budget</label>
+        <label class="pill"><input type="radio" name="blevel" value="abo"/> ABO — ad group budget</label>
+      </div>
+
+      <div class="fgrid">
+        <div><label class="f">Budget type</label><select class="f2" id="cfBudgetType"><option>Daily</option><option>Lifetime</option></select></div>
+        <div><label class="f">Budget amount (USD)</label><input class="f2" id="cfBudget" type="number" min="0" step="1" placeholder="e.g. 200" /></div>
+      </div>
+
+      <div class="fgrid">
+        <div><label class="f">Bid strategy</label><select class="f2" id="cfBid"><option value="lowest">Lowest cost</option><option value="cost">Cost cap</option><option value="bid">Bid cap</option></select></div>
+        <div id="cfCostCapWrap" style="display:none"><label class="f">Cost / bid cap (USD)</label><input class="f2" id="cfCostCap" type="number" min="0" step="0.01" placeholder="e.g. 1.20" /></div>
+      </div>
+
+      <div class="fgrid">
+        <div><label class="f">Start</label><input class="f2" id="cfStart" type="datetime-local" /></div>
+        <div><label class="f">End</label><input class="f2" id="cfEnd" type="datetime-local" /></div>
+      </div>
+      <label class="chk mb"><input type="checkbox" id="cfCont" checked/> Run continuously (no end date)</label>
+
+      <label class="f">Pixel</label><select class="f2 mb" id="cfPixel"></select>
+
+      <div class="fgrid">
+        <div><label class="f">Spark ads auth code</label><input class="f2" id="cfSpark" placeholder="Spark post / auth code" /></div>
+        <div><label class="f">Spark video link</label><input class="f2" id="cfSparkLink" placeholder="https://www.tiktok.com/@…/video/…" /></div>
+      </div>
+      <label class="f">Landing page URL</label><input class="f2 mb" id="cfLink" placeholder="https://your-offer.com" />
+
+      <div class="bc-actions">
+        <button class="mbtn primary" type="submit">Create campaign</button>
+        <button class="mbtn" type="button" data-cclose>Cancel</button>
+        <span class="bc-note">Demo mode adds it to the dashboard. Live mode submits it to TikTok through your backend.</span>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -392,45 +469,62 @@ if(token) showApp();
 
 <script>
 /* ============================================================
-   MANAGE — campaign / ad group / ad tree with activate-pause +
-   duplicate, plus a Business Center connect form.
-   Demo mode edits local state. To go live, POST these actions to
-   your backend (e.g. /api/campaign/status, /api/campaign/duplicate,
-   /api/business-centers) which call the TikTok Marketing API.
+   BUSINESS CENTERS — connect -> BC -> ad account -> campaigns.
+   Activate/pause + duplicate at every level, pixel sharing across
+   ad accounts, and a full new-campaign modal.
+   Demo mode edits local state. To go live, POST these to your
+   backend, which calls the TikTok Marketing API:
+     /api/business-centers · /api/accounts · /api/report
+     /api/campaign/status · /api/campaign/duplicate · /api/campaign/create
+     /api/pixel/share
    ============================================================ */
-const MANAGE = [
-  {id:"c1", name:"US Freecash CPI", status:"live", groups:[
-    {id:"g1", name:"US · 18-34 · Broad",        status:"live",  ads:[
-      {id:"a1", name:"Hook A — UGC unboxing",  status:"live"},
-      {id:"a2", name:"Hook B — Cash payout",   status:"live"}]},
-    {id:"g2", name:"US · 25-44 · Lookalike 2%", status:"pause", ads:[
-      {id:"a3", name:"Static — $500 offer",    status:"pause"}]}]},
-  {id:"c2", name:"UK Reco Social", status:"live", groups:[
-    {id:"g3", name:"UK · 18-30 · Interest",     status:"live",  ads:[
-      {id:"a4", name:"Hook A — Testimonial",   status:"live"},
-      {id:"a5", name:"Hook C — Screen record", status:"pause"}]}]},
-  {id:"c3", name:"CA Playful Rewards", status:"pause", groups:[
-    {id:"g4", name:"CA · Broad",                status:"pause", ads:[
-      {id:"a6", name:"Static — Puzzle promo",  status:"pause"}]}]},
-  {id:"c4", name:"AU Block Puzzle", status:"live", groups:[
-    {id:"g5", name:"AU · 21-40 · Gaming",       status:"live",  ads:[
-      {id:"a7", name:"Hook A — Level clip",    status:"live"}]}]},
+const BCS = [
+  { id:"7012345678901201", name:"Azul BC · US", token:false,
+    pixels:[
+      {id:"px1", name:"US Freecash Pixel", shared:["aa1","aa2"]},
+      {id:"px2", name:"US Reco Pixel",     shared:["aa1"]} ],
+    accounts:[
+      {id:"aa1", name:"Azul US · Main", cur:"USD", campaigns:[
+        {id:"c1", name:"US Freecash CPI", status:"live", groups:[
+          {id:"g1", name:"US · 18-34 · Broad", status:"live", ads:[
+            {id:"a1", name:"Hook A — UGC unboxing", status:"live"},
+            {id:"a2", name:"Hook B — Cash payout", status:"live"}]},
+          {id:"g2", name:"US · 25-44 · Lookalike 2%", status:"pause", ads:[
+            {id:"a3", name:"Static — $500 offer", status:"pause"}]}]},
+        {id:"c2", name:"UK Reco Social", status:"live", groups:[
+          {id:"g3", name:"UK · 18-30 · Interest", status:"live", ads:[
+            {id:"a4", name:"Hook A — Testimonial", status:"live"}]}]} ]},
+      {id:"aa2", name:"Azul US · Scale", cur:"USD", campaigns:[
+        {id:"c3", name:"US Scale — Broad CBO", status:"pause", groups:[
+          {id:"g4", name:"US · Broad", status:"pause", ads:[
+            {id:"a5", name:"Static — Puzzle promo", status:"pause"}]}]} ]} ]},
+  { id:"7012345678901202", name:"Azul BC · EU", token:false,
+    pixels:[ {id:"px3", name:"EU Reco Pixel", shared:["aa3"]} ],
+    accounts:[
+      {id:"aa3", name:"Azul UK · Main", cur:"USD", campaigns:[
+        {id:"c4", name:"AU Block Puzzle", status:"live", groups:[
+          {id:"g5", name:"AU · 21-40 · Gaming", status:"live", ads:[
+            {id:"a6", name:"Hook A — Level clip", status:"live"}]}]} ]} ]},
 ];
-let uid = 100;
+let uid = 200;
+const nav = { bc:null, acct:null };
 const expanded = new Set();
-
+const byId = (arr,id)=>arr.find(x=>x.id===id);
+const curBC = ()=>byId(BCS,nav.bc);
+const curAcct = ()=>{ const b=curBC(); return b?byId(b.accounts,nav.acct):null; };
+function reid(n){ n.id="x"+(uid++); (n.groups||[]).forEach(reid); (n.ads||[]).forEach(reid); }
 function findNode(id){
-  for(const c of MANAGE){ if(c.id===id) return {item:c,arr:MANAGE};
+  const a=curAcct(); if(!a) return null;
+  for(const c of a.campaigns){ if(c.id===id) return {item:c,arr:a.campaigns};
     for(const g of c.groups){ if(g.id===id) return {item:g,arr:c.groups};
-      for(const a of g.ads){ if(a.id===id) return {item:a,arr:g.ads}; } } }
+      for(const ad of g.ads){ if(ad.id===id) return {item:ad,arr:g.ads}; } } }
   return null;
 }
-function reid(n){ n.id="x"+(uid++); (n.groups||[]).forEach(reid); (n.ads||[]).forEach(reid); }
-function tglHTML(id,on){
-  return `<button class="tgl ${on?'on':''}" data-toggle="${id}" role="switch" aria-checked="${on}" title="${on?'Active — click to pause':'Paused — click to activate'}"><span class="knob"></span></button>`;
-}
+
+/* ---------- campaign tree ---------- */
+function tglHTML(id,on){ return `<button class="tgl ${on?'on':''}" data-toggle="${id}" role="switch" aria-checked="${on}" title="${on?'Active — click to pause':'Paused — click to activate'}"><span class="knob"></span></button>`; }
 function rowHTML(kind,item,open){
-  const on = item.status==='live';
+  const on=item.status==='live';
   const kids = kind==='campaign'?item.groups.length+' ad groups':kind==='group'?item.ads.length+' ads':'';
   const canExp = kind!=='ad';
   const chev = canExp ? `<span class="chev ${open?'open':''}" aria-hidden="true">▸</span>` : '<span class="chev-sp"></span>';
@@ -446,60 +540,165 @@ function rowHTML(kind,item,open){
     </div>
   </div>`;
 }
-function renderTree(){
-  const t=document.getElementById("tree");
-  t.innerHTML = MANAGE.map(c=>{
+function treeHTML(camps){
+  if(!camps.length) return `<div class="bc-empty">No campaigns yet — click “New campaign”.</div>`;
+  return camps.map(c=>{
     let inner="";
     if(expanded.has(c.id)){
       inner = `<div class="children">`+ c.groups.map(g=>{
-        let gi="";
-        if(expanded.has(g.id)) gi = `<div class="children">`+ g.ads.map(a=>rowHTML("ad",a,false)).join("") +`</div>`;
+        let gi=""; if(expanded.has(g.id)) gi=`<div class="children">`+ g.ads.map(a=>rowHTML("ad",a,false)).join("") +`</div>`;
         return rowHTML("group",g,expanded.has(g.id)) + gi;
       }).join("") +`</div>`;
     }
     return rowHTML("campaign",c,expanded.has(c.id)) + inner;
   }).join("");
 }
-document.getElementById("tree").addEventListener("click", e=>{
-  const ex=e.target.closest("[data-expand]");
-  if(ex){ const id=ex.getAttribute("data-expand"); expanded.has(id)?expanded.delete(id):expanded.add(id); renderTree(); return; }
-  const tg=e.target.closest("[data-toggle]");
-  if(tg){ const n=findNode(tg.getAttribute("data-toggle")); if(n){ n.item.status=n.item.status==='live'?'pause':'live'; renderTree(); } return; }
-  const dp=e.target.closest("[data-dup]");
-  if(dp){ const n=findNode(dp.getAttribute("data-dup")); if(n){ const clone=JSON.parse(JSON.stringify(n.item)); reid(clone); clone.name=n.item.name+" (copy)"; n.arr.splice(n.arr.indexOf(n.item)+1,0,clone); renderTree(); } return; }
-});
-document.getElementById("newCampaign").addEventListener("click",()=>{
-  const c={id:"x"+(uid++),name:"New campaign",status:"pause",groups:[{id:"x"+(uid++),name:"New ad group",status:"pause",ads:[{id:"x"+(uid++),name:"New ad",status:"pause"}]}]};
-  MANAGE.unshift(c); expanded.add(c.id); renderTree();
-});
 
-/* Business Centers (demo: token value is never retained) */
-const BCS=[];
-function renderBCs(){
-  const el=document.getElementById("bcList");
-  if(!BCS.length){ el.innerHTML=`<div class="bc-empty">No Business Centers connected yet.</div>`; return; }
-  el.innerHTML = BCS.map((b,i)=>`<div class="bc-item"><div class="tlabel"><span class="tname">${b.name}</span><span class="tkind">BC ${b.id} · ${b.tok?'custom token':'server token'}</span></div><button class="mbtn sm" data-bcdel="${i}">Remove</button></div>`).join("");
+/* ---------- views ---------- */
+function renderMgr(){
+  const crumb=document.getElementById("mgrCrumb"), el=document.getElementById("mgr");
+  if(!nav.bc){
+    crumb.innerHTML = `<span class="c-here">Business Centers</span>`;
+    el.innerHTML = `
+      <div class="panel">
+        <h3>Business Centers</h3>
+        <div class="cap">Select a Business Center to manage its ad accounts, pixels &amp; campaigns</div>
+        <div class="cards">${BCS.map(b=>`
+          <button class="ecard" data-openbc="${b.id}">
+            <div class="ec-top"><span class="ec-name">${b.name}</span><span class="ec-go">→</span></div>
+            <div class="ec-sub">BC ${b.id}${b.token?' · custom token':''}</div>
+            <div class="ec-meta">${b.accounts.length} ad accounts · ${b.pixels.length} pixels</div>
+          </button>`).join("")}</div>
+      </div>
+      <div class="panel">
+        <h3>Connect a Business Center</h3>
+        <div class="cap">Link a TikTok Business Center via the Marketing API</div>
+        <form id="bcForm" class="bc-form" autocomplete="off">
+          <div class="bc-grid">
+            <div><label class="f">Business Center ID</label><input class="f2" id="bcId" placeholder="e.g. 7012345678901234567" /></div>
+            <div><label class="f">Display name</label><input class="f2" id="bcName" placeholder="e.g. Azul BC · US" /></div>
+            <div><label class="f">Access token (optional)</label><input class="f2" id="bcToken" type="password" placeholder="Leave blank to use the server token" /></div>
+          </div>
+          <div class="bc-actions"><button class="mbtn primary" type="submit">Connect Business Center</button>
+          <span class="bc-note">Demo mode keeps this in your browser and never stores the token. Live mode posts to your Vercel backend, where the token stays server-side.</span></div>
+        </form>
+      </div>`;
+    return;
+  }
+  const b=curBC();
+  if(!nav.acct){
+    crumb.innerHTML = `<a data-crumb="root">Business Centers</a><span class="c-sep">/</span><span class="c-here">${b.name}</span>`;
+    el.innerHTML = `
+      <div class="panel">
+        <h3>Ad accounts</h3>
+        <div class="cap">Select an ad account to manage its campaigns</div>
+        <div class="cards">${b.accounts.map(a=>`
+          <button class="ecard" data-openacct="${a.id}">
+            <div class="ec-top"><span class="ec-name">${a.name}</span><span class="ec-go">→</span></div>
+            <div class="ec-sub">${a.id} · ${a.cur}</div>
+            <div class="ec-meta">${a.campaigns.length} campaigns</div>
+          </button>`).join("")}</div>
+      </div>
+      <div class="panel">
+        <h3>Pixels</h3>
+        <div class="cap">Share a pixel across this Business Center's ad accounts</div>
+        ${b.pixels.length? b.pixels.map(px=>`
+          <div class="pix">
+            <div class="pix-h"><span class="tname">${px.name}</span><span class="tkind">${px.id}</span></div>
+            <div class="pix-share">${b.accounts.map(a=>`
+              <label class="chk"><input type="checkbox" data-share="${px.id}::${a.id}" ${px.shared.includes(a.id)?'checked':''}/> ${a.name}</label>`).join("")}</div>
+          </div>`).join("") : `<div class="bc-empty">No pixels on this Business Center.</div>`}
+      </div>`;
+    return;
+  }
+  const a=curAcct();
+  crumb.innerHTML = `<a data-crumb="root">Business Centers</a><span class="c-sep">/</span><a data-crumb="bc">${b.name}</a><span class="c-sep">/</span><span class="c-here">${a.name}</span>`;
+  el.innerHTML = `
+    <div class="panel">
+      <div class="row-between">
+        <div><h3>Campaigns</h3><div class="cap" style="margin-bottom:0">${a.name} — click a row to drill into ad groups, then ads</div></div>
+        <button class="mbtn primary" data-newcamp><i>+</i> New campaign</button>
+      </div>
+      <div id="tree" style="margin-top:14px">${treeHTML(a.campaigns)}</div>
+    </div>`;
 }
-document.getElementById("bcForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  const id=document.getElementById("bcId").value.trim();
-  if(!id) return;
-  const name=document.getElementById("bcName").value.trim()||("Business Center "+id);
-  const tok=document.getElementById("bcToken").value.trim();
-  BCS.push({id,name,tok:!!tok});   // store only whether a token was given, never the value
-  document.getElementById("bcForm").reset(); renderBCs();
-});
-document.getElementById("bcList").addEventListener("click",e=>{ const d=e.target.closest("[data-bcdel]"); if(d){ BCS.splice(+d.getAttribute("data-bcdel"),1); renderBCs(); }});
 
-/* view switching */
-document.querySelectorAll('.nav [data-view]').forEach(a=>a.addEventListener("click",e=>{
+/* ---------- delegated events on the whole view ---------- */
+const V = document.getElementById("view-manage");
+V.addEventListener("click", e=>{
+  const bcOpen=e.target.closest("[data-openbc]"); if(bcOpen){ nav.bc=bcOpen.getAttribute("data-openbc"); nav.acct=null; renderMgr(); return; }
+  const aOpen=e.target.closest("[data-openacct]"); if(aOpen){ nav.acct=aOpen.getAttribute("data-openacct"); expanded.clear(); renderMgr(); return; }
+  const cr=e.target.closest("[data-crumb]"); if(cr){ const w=cr.getAttribute("data-crumb"); if(w==="root"){ nav.bc=null; nav.acct=null; } else { nav.acct=null; } renderMgr(); return; }
+  const nc=e.target.closest("[data-newcamp]"); if(nc){ openCamp(); return; }
+  const ex=e.target.closest("[data-expand]"); if(ex){ const id=ex.getAttribute("data-expand"); expanded.has(id)?expanded.delete(id):expanded.add(id); document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); return; }
+  const tg=e.target.closest("[data-toggle]"); if(tg){ const n=findNode(tg.getAttribute("data-toggle")); if(n){ n.item.status=n.item.status==='live'?'pause':'live'; document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); } return; }
+  const dp=e.target.closest("[data-dup]"); if(dp){ const n=findNode(dp.getAttribute("data-dup")); if(n){ const clone=JSON.parse(JSON.stringify(n.item)); reid(clone); clone.name=n.item.name+" (copy)"; n.arr.splice(n.arr.indexOf(n.item)+1,0,clone); document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); } return; }
+});
+V.addEventListener("change", e=>{
+  const sh=e.target.closest("[data-share]"); if(sh){ const parts=sh.getAttribute("data-share").split("::"); const pid=parts[0], aid=parts[1]; const b=curBC(); const px=b?byId(b.pixels,pid):null; if(px){ const i=px.shared.indexOf(aid); if(sh.checked && i<0) px.shared.push(aid); if(!sh.checked && i>=0) px.shared.splice(i,1); } }
+});
+V.addEventListener("submit", e=>{
+  if(e.target.id==='bcForm'){
+    e.preventDefault();
+    const id=document.getElementById("bcId").value.trim(); if(!id) return;
+    const name=document.getElementById("bcName").value.trim()||("Business Center "+id);
+    const tok=document.getElementById("bcToken").value.trim();
+    BCS.push({ id, name, token:!!tok, pixels:[{id:"x"+(uid++),name:name+" Pixel",shared:[]}], accounts:[{id:"x"+(uid++),name:name+" · Account 1",cur:"USD",campaigns:[]}] });
+    renderMgr();
+  }
+});
+
+/* ---------- new-campaign modal ---------- */
+const camp = document.getElementById("campModal");
+function fillSel(sel,opts,val){ sel.innerHTML=opts.map(o=>`<option value="${o.v}"${o.v===val?' selected':''}>${o.t}</option>`).join(""); }
+function syncCampPixels(){
+  const b=byId(BCS,document.getElementById("cfBc").value);
+  const aid=document.getElementById("cfAcct").value;
+  const px=(b?b.pixels:[]).filter(p=>p.shared.includes(aid));
+  fillSel(document.getElementById("cfPixel"), [{v:"",t:px.length?"— select shared pixel —":"No pixels shared to this account"}].concat(px.map(p=>({v:p.id,t:p.name}))), "");
+}
+function syncCampAccts(){
+  const b=byId(BCS,document.getElementById("cfBc").value);
+  const pre = (nav.acct && b && byId(b.accounts,nav.acct)) ? nav.acct : (b && b.accounts[0] ? b.accounts[0].id : "");
+  fillSel(document.getElementById("cfAcct"), (b?b.accounts:[]).map(a=>({v:a.id,t:a.name})), pre);
+  syncCampPixels();
+}
+function openCamp(){
+  fillSel(document.getElementById("cfBc"), BCS.map(b=>({v:b.id,t:b.name})), nav.bc||(BCS[0]&&BCS[0].id));
+  syncCampAccts();
+  camp.classList.add("open"); camp.setAttribute("aria-hidden","false");
+}
+function closeCamp(){ camp.classList.remove("open"); camp.setAttribute("aria-hidden","true"); }
+document.getElementById("cfBc").addEventListener("change", syncCampAccts);
+document.getElementById("cfAcct").addEventListener("change", syncCampPixels);
+document.getElementById("cfBid").addEventListener("change", e=>{ document.getElementById("cfCostCapWrap").style.display = e.target.value==='lowest'?'none':'block'; });
+document.getElementById("cfCont").addEventListener("change", e=>{ const end=document.getElementById("cfEnd"); end.disabled=e.target.checked; if(e.target.checked) end.value=""; });
+camp.querySelectorAll("[data-cclose]").forEach(x=>x.addEventListener("click", closeCamp));
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeCamp(); });
+document.getElementById("cfEnd").disabled = true;
+document.getElementById("campForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const b=byId(BCS,document.getElementById("cfBc").value); if(!b) return;
+  const a=byId(b.accounts,document.getElementById("cfAcct").value); if(!a) return;
+  const name=document.getElementById("cfName").value.trim()||"New campaign";
+  const c={ id:"x"+(uid++), name, status:"pause", groups:[ {id:"x"+(uid++), name:"Ad group 1", status:"pause", ads:[ {id:"x"+(uid++), name:"Ad 1 — Spark", status:"pause"} ]} ] };
+  a.campaigns.unshift(c);
+  closeCamp();
+  document.getElementById("campForm").reset();
+  document.getElementById("cfCont").checked=true; document.getElementById("cfEnd").disabled=true;
+  document.getElementById("cfCostCapWrap").style.display="none";
+  nav.bc=b.id; nav.acct=a.id; expanded.add(c.id); renderMgr();
+});
+
+/* ---------- view switching ---------- */
+document.querySelectorAll('.nav [data-view]').forEach(a=>a.addEventListener("click", e=>{
   e.preventDefault();
   document.querySelectorAll('.nav a').forEach(x=>x.classList.remove("on"));
   a.classList.add("on");
   const v=a.getAttribute("data-view");
   document.getElementById("view-overview").style.display = v==="overview"?"block":"none";
   document.getElementById("view-manage").style.display   = v==="manage"?"block":"none";
-  if(v==="manage"){ renderTree(); renderBCs(); }
+  if(v==="manage") renderMgr();
 }));
 </script>
 </body>
