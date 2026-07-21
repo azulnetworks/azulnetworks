@@ -516,11 +516,63 @@ const curAcct = ()=>{ const b=curBC(); return b?byId(b.accounts,nav.acct):null; 
 function reid(n){ n.id="x"+(uid++); (n.groups||[]).forEach(reid); (n.ads||[]).forEach(reid); }
 function findNode(id){
   const a=curAcct(); if(!a) return null;
-  for(const c of a.campaigns){ if(c.id===id) return {item:c,arr:a.campaigns};
-    for(const g of c.groups){ if(g.id===id) return {item:g,arr:c.groups};
-      for(const ad of g.ads){ if(ad.id===id) return {item:ad,arr:g.ads}; } } }
+  for(const c of a.campaigns){ if(c.id===id) return {item:c,arr:a.campaigns,level:'campaign'};
+    for(const g of (c.groups||[])){ if(g.id===id) return {item:g,arr:c.groups,level:'adgroup'};
+      for(const ad of (g.ads||[])){ if(ad.id===id) return {item:ad,arr:g.ads,level:'ad'}; } } }
   return null;
 }
+
+/* ---------- live backend layer (used only when API_BASE is set) ----------
+   Reads hydrate the SAME BCS structures the demo renders, so the UI code is
+   unchanged; writes POST to the Vercel backend and update local state on success. */
+const LIVE = !!API_BASE;
+async function mFetch(path, opts){
+  const res = await fetch(`${API_BASE}${path}`, Object.assign(
+    { headers:{ Authorization:`Bearer ${token}`, "Content-Type":"application/json" } }, opts||{}));
+  if(res.status===401){ signOut(); throw new Error("session expired"); }
+  const j = await res.json().catch(()=>({}));
+  if(!res.ok || j.error) throw new Error(j.error || ("HTTP "+res.status));
+  return j;
+}
+async function loadBCsLive(){
+  const j = await mFetch("/api/business-centers");
+  BCS.length=0;
+  (j.businessCenters||[]).forEach(b=> BCS.push({ id:b.id, name:b.name, token:false, pixels:[], accounts:[], _acctsLoaded:false }));
+}
+async function loadAccountsLive(b){
+  if(!b || b._acctsLoaded) return;
+  const j = await mFetch(`/api/accounts?bc_id=${encodeURIComponent(b.id)}`);
+  b.accounts = (j.accounts||[]).map(a=>({ id:a.id, name:a.name, cur:a.currency||"USD", status:a.status, campaigns:[], _loaded:false }));
+  const pixMap={};
+  for(const a of b.accounts){
+    try{
+      const pj = await mFetch(`/api/pixels?advertiser_id=${encodeURIComponent(a.id)}`);
+      (pj.pixels||[]).forEach(p=>{ if(!pixMap[p.id]) pixMap[p.id]={id:p.id,name:p.name,shared:[]}; pixMap[p.id].shared.push(a.id); });
+    }catch(_){}
+  }
+  b.pixels = Object.values(pixMap);
+  b._acctsLoaded = true;
+}
+async function loadCampaignsLive(a){
+  if(!a || a._loaded) return;
+  const j = await mFetch(`/api/campaigns?advertiser_id=${encodeURIComponent(a.id)}`);
+  a.campaigns = (j.campaigns||[]).map(c=>({ id:c.id, name:c.name, status:c.status, groups:[], _loaded:false }));
+  a._loaded=true;
+}
+async function loadGroupsLive(a,c){
+  if(!c || c._loaded) return;
+  const j = await mFetch(`/api/adgroups?advertiser_id=${encodeURIComponent(a.id)}&campaign_id=${encodeURIComponent(c.id)}`);
+  c.groups = (j.adgroups||[]).map(g=>({ id:g.id, name:g.name, status:g.status, ads:[], _loaded:false }));
+  c._loaded=true;
+}
+async function loadAdsLive(a,g){
+  if(!g || g._loaded) return;
+  const j = await mFetch(`/api/ads?advertiser_id=${encodeURIComponent(a.id)}&adgroup_id=${encodeURIComponent(g.id)}`);
+  g.ads = (j.ads||[]).map(ad=>({ id:ad.id, name:ad.name, status:ad.status }));
+  g._loaded=true;
+}
+// UI objective label -> TikTok objective_type enum
+const OBJ_MAP = { "Conversions":"CONVERSIONS", "Product Sales":"PRODUCT_SALES", "Traffic":"TRAFFIC", "App Promotion":"APP_PROMOTION", "Lead Generation":"LEAD_GENERATION", "Reach":"REACH", "Video Views":"VIDEO_VIEWS" };
 
 /* ---------- campaign tree ---------- */
 function tglHTML(id,on){ return `<button class="tgl ${on?'on':''}" data-toggle="${id}" role="switch" aria-checked="${on}" title="${on?'Active — click to pause':'Paused — click to activate'}"><span class="knob"></span></button>`; }
@@ -626,21 +678,51 @@ function renderMgr(){
 
 /* ---------- delegated events on the whole view ---------- */
 const V = document.getElementById("view-manage");
-V.addEventListener("click", e=>{
-  const bcOpen=e.target.closest("[data-openbc]"); if(bcOpen){ nav.bc=bcOpen.getAttribute("data-openbc"); nav.acct=null; renderMgr(); return; }
-  const aOpen=e.target.closest("[data-openacct]"); if(aOpen){ nav.acct=aOpen.getAttribute("data-openacct"); expanded.clear(); renderMgr(); return; }
+function busy(on){ V.style.opacity=on?"0.55":""; V.style.pointerEvents=on?"none":""; }
+V.addEventListener("click", async e=>{
+  const bcOpen=e.target.closest("[data-openbc]"); if(bcOpen){ nav.bc=bcOpen.getAttribute("data-openbc"); nav.acct=null; if(LIVE){ busy(true); try{ await loadAccountsLive(curBC()); }catch(err){ alert("Couldn't load ad accounts: "+err.message); } busy(false); } renderMgr(); return; }
+  const aOpen=e.target.closest("[data-openacct]"); if(aOpen){ nav.acct=aOpen.getAttribute("data-openacct"); expanded.clear(); if(LIVE){ busy(true); try{ await loadCampaignsLive(curAcct()); }catch(err){ alert("Couldn't load campaigns: "+err.message); } busy(false); } renderMgr(); return; }
   const cr=e.target.closest("[data-crumb]"); if(cr){ const w=cr.getAttribute("data-crumb"); if(w==="root"){ nav.bc=null; nav.acct=null; } else { nav.acct=null; } renderMgr(); return; }
   const nc=e.target.closest("[data-newcamp]"); if(nc){ openCamp(); return; }
-  const ex=e.target.closest("[data-expand]"); if(ex){ const id=ex.getAttribute("data-expand"); expanded.has(id)?expanded.delete(id):expanded.add(id); document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); return; }
-  const tg=e.target.closest("[data-toggle]"); if(tg){ const n=findNode(tg.getAttribute("data-toggle")); if(n){ n.item.status=n.item.status==='live'?'pause':'live'; document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); } return; }
-  const dp=e.target.closest("[data-dup]"); if(dp){ const n=findNode(dp.getAttribute("data-dup")); if(n){ const clone=JSON.parse(JSON.stringify(n.item)); reid(clone); clone.name=n.item.name+" (copy)"; n.arr.splice(n.arr.indexOf(n.item)+1,0,clone); document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); } return; }
+  const ex=e.target.closest("[data-expand]"); if(ex){ const id=ex.getAttribute("data-expand"); const willOpen=!expanded.has(id);
+    if(willOpen && LIVE){ const a=curAcct(); const c=a&&byId(a.campaigns,id);
+      busy(true);
+      try{
+        if(c){ await loadGroupsLive(a,c); }
+        else if(a){ for(const cc of a.campaigns){ const g=byId(cc.groups||[],id); if(g){ await loadAdsLive(a,g); break; } } }
+      }catch(err){ alert("Couldn't load: "+err.message); }
+      busy(false);
+    }
+    willOpen?expanded.add(id):expanded.delete(id);
+    document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); return; }
+  const tg=e.target.closest("[data-toggle]"); if(tg){ const n=findNode(tg.getAttribute("data-toggle")); if(n){ const next=n.item.status==='live'?'pause':'live';
+    if(LIVE){ busy(true); try{ await mFetch("/api/campaign-status",{ method:"POST", body:JSON.stringify({ level:n.level, ids:[n.item.id], enable:next==='live', advertiser_id:curAcct().id }) }); }catch(err){ busy(false); alert("Toggle failed: "+err.message); return; } busy(false); }
+    n.item.status=next; document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); } return; }
+  const dp=e.target.closest("[data-dup]"); if(dp){ const n=findNode(dp.getAttribute("data-dup")); if(n){
+    if(LIVE){
+      if(n.level!=='campaign'){ alert("Live duplicate is available for campaigns only. Duplicate the campaign, or rebuild the ad group in the New campaign flow."); return; }
+      busy(true);
+      try{ const r=await mFetch("/api/campaign-duplicate",{ method:"POST", body:JSON.stringify({ advertiser_id:curAcct().id, campaign_id:n.item.id }) });
+        const clone={ id:r.campaignId||("x"+(uid++)), name:n.item.name+" (copy)", status:"pause", groups:[], _loaded:false };
+        n.arr.splice(n.arr.indexOf(n.item)+1,0,clone);
+      }catch(err){ busy(false); alert("Duplicate failed: "+err.message); return; }
+      busy(false);
+    } else {
+      const clone=JSON.parse(JSON.stringify(n.item)); reid(clone); clone.name=n.item.name+" (copy)"; n.arr.splice(n.arr.indexOf(n.item)+1,0,clone);
+    }
+    document.getElementById("tree").innerHTML=treeHTML(curAcct().campaigns); } return; }
 });
-V.addEventListener("change", e=>{
-  const sh=e.target.closest("[data-share]"); if(sh){ const parts=sh.getAttribute("data-share").split("::"); const pid=parts[0], aid=parts[1]; const b=curBC(); const px=b?byId(b.pixels,pid):null; if(px){ const i=px.shared.indexOf(aid); if(sh.checked && i<0) px.shared.push(aid); if(!sh.checked && i>=0) px.shared.splice(i,1); } }
+V.addEventListener("change", async e=>{
+  const sh=e.target.closest("[data-share]"); if(sh){ const parts=sh.getAttribute("data-share").split("::"); const pid=parts[0], aid=parts[1]; const b=curBC(); const px=b?byId(b.pixels,pid):null; if(px){
+    if(LIVE){ const targets = sh.checked ? px.shared.concat([aid]) : px.shared.filter(x=>x!==aid);
+      try{ await mFetch("/api/pixel-share",{ method:"POST", body:JSON.stringify({ bc_id:b.id, pixel_id:pid, advertiser_ids:targets }) }); }
+      catch(err){ sh.checked=!sh.checked; alert("Pixel share failed: "+err.message); return; } }
+    const i=px.shared.indexOf(aid); if(sh.checked && i<0) px.shared.push(aid); if(!sh.checked && i>=0) px.shared.splice(i,1); } }
 });
-V.addEventListener("submit", e=>{
+V.addEventListener("submit", async e=>{
   if(e.target.id==='bcForm'){
     e.preventDefault();
+    if(LIVE){ busy(true); try{ await loadBCsLive(); nav.bc=null; nav.acct=null; }catch(err){ busy(false); alert("Couldn't load Business Centers: "+err.message); return; } busy(false); renderMgr(); return; }
     const id=document.getElementById("bcId").value.trim(); if(!id) return;
     const name=document.getElementById("bcName").value.trim()||("Business Center "+id);
     const tok=document.getElementById("bcToken").value.trim();
@@ -677,13 +759,29 @@ document.getElementById("cfCont").addEventListener("change", e=>{ const end=docu
 camp.querySelectorAll("[data-cclose]").forEach(x=>x.addEventListener("click", closeCamp));
 document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeCamp(); });
 document.getElementById("cfEnd").disabled = true;
-document.getElementById("campForm").addEventListener("submit", e=>{
+document.getElementById("campForm").addEventListener("submit", async e=>{
   e.preventDefault();
   const b=byId(BCS,document.getElementById("cfBc").value); if(!b) return;
   const a=byId(b.accounts,document.getElementById("cfAcct").value); if(!a) return;
   const name=document.getElementById("cfName").value.trim()||"New campaign";
-  const c={ id:"x"+(uid++), name, status:"pause", groups:[ {id:"x"+(uid++), name:"Ad group 1", status:"pause", ads:[ {id:"x"+(uid++), name:"Ad 1 — Spark", status:"pause"} ]} ] };
-  a.campaigns.unshift(c);
+  let c;
+  if(LIVE){
+    const objLabel=document.getElementById("cfObjective").value;
+    const objective=OBJ_MAP[objLabel]||"CONVERSIONS";
+    const cbo=(document.querySelector('input[name="blevel"]:checked')||{}).value!=='abo';
+    const budgetMode=document.getElementById("cfBudgetType").value==="Lifetime"?"BUDGET_MODE_TOTAL":"BUDGET_MODE_DAY";
+    const budget=document.getElementById("cfBudget").value;
+    busy(true);
+    try{
+      const r=await mFetch("/api/campaign-create",{ method:"POST", body:JSON.stringify({ advertiser_id:a.id, name, objective, budgetMode, budget, cbo }) });
+      c={ id:r.campaignId||("x"+(uid++)), name, status:"pause", groups:[], _loaded:false };
+      a.campaigns.unshift(c);
+    }catch(err){ busy(false); alert("Create failed: "+err.message+"\n\nThe campaign shell is created via the API; ad groups, creatives and Spark posts still need to be finished in TikTok Ads Manager."); return; }
+    busy(false);
+  } else {
+    c={ id:"x"+(uid++), name, status:"pause", groups:[ {id:"x"+(uid++), name:"Ad group 1", status:"pause", ads:[ {id:"x"+(uid++), name:"Ad 1 — Spark", status:"pause"} ]} ] };
+    a.campaigns.unshift(c);
+  }
   closeCamp();
   document.getElementById("campForm").reset();
   document.getElementById("cfCont").checked=true; document.getElementById("cfEnd").disabled=true;
@@ -692,14 +790,18 @@ document.getElementById("campForm").addEventListener("submit", e=>{
 });
 
 /* ---------- view switching ---------- */
-document.querySelectorAll('.nav [data-view]').forEach(a=>a.addEventListener("click", e=>{
+let mgrHydrated=false;
+document.querySelectorAll('.nav [data-view]').forEach(a=>a.addEventListener("click", async e=>{
   e.preventDefault();
   document.querySelectorAll('.nav a').forEach(x=>x.classList.remove("on"));
   a.classList.add("on");
   const v=a.getAttribute("data-view");
   document.getElementById("view-overview").style.display = v==="overview"?"block":"none";
   document.getElementById("view-manage").style.display   = v==="manage"?"block":"none";
-  if(v==="manage") renderMgr();
+  if(v==="manage"){
+    if(LIVE && !mgrHydrated){ busy(true); try{ await loadBCsLive(); mgrHydrated=true; nav.bc=null; nav.acct=null; }catch(err){ alert("Couldn't load Business Centers: "+err.message); } busy(false); }
+    renderMgr();
+  }
 }));
 </script>
 <script>(function(){function r(){return 9+Math.floor(Math.random()*18);}function u(){document.querySelectorAll(".agentN").forEach(function(e){e.textContent=r();});}u();setInterval(u,4500);})();</script>
