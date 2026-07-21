@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Azul Networks — Ads Dashboard</title>
 <meta name="theme-color" content="#07060B" />
+<link rel="icon" href="logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -31,7 +32,7 @@
   .lg-hud{font-family:"JetBrains Mono";font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:7px;margin-bottom:20px}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 9px var(--good)}
   .brand{display:flex;align-items:center;gap:10px}
-  .logo{width:32px;height:32px;flex:none;border-radius:8px;background:linear-gradient(135deg,#2f7de0,#8B5CF6 55%,#C026D3);box-shadow:0 0 16px rgba(139,92,246,.5)}
+  .logo{width:32px;height:32px;flex:none;border-radius:8px;background:url("logo.png") center/contain no-repeat;filter:drop-shadow(0 0 10px rgba(139,92,246,.45))}
   .brand b{font-family:"Space Grotesk";font-weight:600;font-size:1.12rem;color:#F4F4F7}
   .lg-h{font-size:1.4rem;color:#fff;margin:16px 0 4px}
   .lg-sub{font-size:.86rem;color:var(--muted);margin-bottom:22px}
@@ -189,7 +190,7 @@
 <!-- DASHBOARD -->
 <div id="app">
   <div class="top">
-    <div class="brand"><span class="logo"></span><div><b style="display:block">Ads Engine</b><span class="pill">Solo · Frankfurt</span></div></div>
+    <div class="brand"><span class="logo"></span><div><b style="display:block">Azul Networks</b><span class="pill">Solo · Frankfurt</span></div></div>
     <div style="display:flex;align-items:center;gap:14px">
       <span class="pill"><span class="dot"></span>Agents ● online</span>
       <button class="signout" id="signout">Sign out</button>
