@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Azul Networks — AI that scales your TikTok &amp; Meta ad spend</title>
+<meta name="description" content="Azul Networks uses AI to scale TikTok and Meta ad spend profitably — far beyond what a solo media buyer can manage. Up to $50k/day in managed spend." />
+<meta name="theme-color" content="#07060B" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#07060B;--line:rgba(168,148,255,.14);--line-strong:rgba(168,148,255,.32);
+    --violet:#8B5CF6;--violet-bright:#A78BFA;--magenta:#C026D3;--gold:#c9a45a;
+    --text:#ECE9F7;--muted:#8E89A8;--dim:#6b6788;--good:#34D399;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:"Space Grotesk",sans-serif;font-weight:600;letter-spacing:-.02em;color:#fff}
+  a{color:inherit;text-decoration:none}
+  .mono{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+
+  #aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  #aura .blob{position:absolute;border-radius:50%;filter:blur(110px);mix-blend-mode:screen;opacity:.38}
+  .b1{width:60vw;height:60vw;left:-15vw;top:-20vh;background:radial-gradient(circle,rgba(139,92,246,.6),transparent 68%)}
+  .b2{width:50vw;height:50vw;right:-15vw;top:20vh;background:radial-gradient(circle,rgba(192,38,211,.4),transparent 68%)}
+  .b3{width:45vw;height:45vw;left:20%;bottom:-25vh;background:radial-gradient(circle,rgba(201,164,90,.12),transparent 70%)}
+  main{position:relative;z-index:2}
+
+  /* NAV */
+  header{position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);background:rgba(7,6,11,.55);border-bottom:1px solid rgba(168,148,255,.08)}
+  nav{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#2f7de0,#8B5CF6 55%,#C026D3);box-shadow:0 0 16px rgba(139,92,246,.5)}
+  .brand b{font-family:"Space Grotesk";font-weight:600;font-size:1.05rem;color:#F4F4F7}
+  .links{display:flex;align-items:center;gap:24px}
+  .links a{font-size:.86rem;color:#B8B4C8;transition:.2s}
+  .links a:hover{color:#fff}
+  .signin{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:.85rem;color:#fff;padding:9px 16px;border-radius:10px;border:1px solid rgba(168,148,255,.4);background:rgba(139,92,246,.1);display:inline-flex;align-items:center;gap:7px;transition:.2s}
+  .signin:hover{background:rgba(139,92,246,.2);border-color:rgba(167,139,250,.7)}
+  @media(max-width:720px){.links a:not(.signin){display:none}}
+
+  /* HERO */
+  .hero{padding:96px 0 64px;text-align:center}
+  .eyebrow{font-family:"JetBrains Mono";font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--violet-bright);display:inline-flex;align-items:center;gap:8px;margin-bottom:22px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 9px var(--good)}
+  .hero h1{font-size:clamp(2.1rem,6vw,3.6rem);line-height:1.05;max-width:760px;margin:0 auto 20px}
+  .hero p{font-size:1.05rem;color:var(--muted);max-width:600px;margin:0 auto 32px;line-height:1.7}
+  .cta{display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .btn-primary{background:#fff;color:#0B0813;font-family:"Space Grotesk";font-weight:600;font-size:.95rem;padding:13px 22px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;transition:transform .2s,box-shadow .2s}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 44px -16px rgba(167,139,250,.6)}
+  .btn-ghost{border:1px solid var(--line-strong);color:#fff;font-family:"Space Grotesk";font-weight:600;font-size:.95rem;padding:13px 22px;border-radius:12px;display:inline-flex;align-items:center;gap:8px;transition:.2s}
+  .btn-ghost:hover{background:rgba(139,92,246,.1)}
+  .trust{margin-top:34px;font-size:.9rem;color:var(--dim)}
+  .trust b{color:#F4F4F7;font-weight:600}
+
+  /* MARQUEE */
+  .marquee{border-top:1px solid rgba(168,148,255,.08);border-bottom:1px solid rgba(168,148,255,.08);padding:16px 0;overflow:hidden;white-space:nowrap;margin:24px 0 0}
+  .marquee span{font-family:"JetBrains Mono";font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 18px}
+  .marquee .sep{color:var(--violet)}
+
+  section{padding:80px 0}
+  .tag{font-family:"JetBrains Mono";font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--violet-bright);margin-bottom:14px}
+  .sec-h{font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.12;max-width:620px;margin-bottom:16px}
+  .sec-sub{font-size:1rem;color:var(--muted);max-width:620px;line-height:1.7}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:40px}
+  .card{border:1px solid var(--line);border-radius:18px;padding:26px;background:linear-gradient(180deg,rgba(18,15,30,.5),rgba(11,9,18,.42))}
+  .card .num{font-family:"JetBrains Mono";font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .card h3{font-size:1.25rem;margin-bottom:12px}
+  .card p{color:var(--muted);font-size:.94rem;line-height:1.7;margin-bottom:16px}
+  .card ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .card li{font-size:.9rem;color:#CFCADF;display:flex;align-items:flex-start;gap:9px}
+  .card li i{color:var(--violet-bright);font-size:16px;margin-top:2px}
+
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:40px}
+  .step{border:1px solid var(--line);border-radius:16px;padding:24px;background:linear-gradient(180deg,rgba(18,15,30,.5),rgba(11,9,18,.42))}
+  .step .n{font-family:"Space Grotesk";font-weight:700;font-size:1.6rem;color:var(--violet-bright);margin-bottom:10px}
+  .step h3{font-size:1.05rem;margin-bottom:8px}
+  .step p{color:var(--muted);font-size:.9rem;line-height:1.65}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:40px}
+  .stat{border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center;background:linear-gradient(180deg,rgba(18,15,30,.5),rgba(11,9,18,.42))}
+  .stat .big{font-family:"Space Grotesk";font-weight:700;font-size:2.4rem;background:linear-gradient(135deg,#A78BFA,#C026D3);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .stat .lbl{font-size:.88rem;color:var(--muted);margin-top:8px;line-height:1.5}
+
+  .contact{text-align:center;border:1px solid var(--line-strong);border-radius:24px;padding:56px 26px;background:linear-gradient(180deg,rgba(26,21,42,.5),rgba(11,9,18,.42));margin-top:20px}
+  .contact h2{font-size:clamp(1.7rem,4vw,2.4rem);margin-bottom:14px}
+  .contact p{color:var(--muted);max-width:520px;margin:0 auto 28px;line-height:1.7}
+
+  footer{border-top:1px solid rgba(168,148,255,.08);padding:40px 0;margin-top:60px}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .foot .mono{font-size:.72rem;color:var(--dim)}
+</style>
+</head>
+<body>
+<div id="aura" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="#top" class="brand"><span class="logo"></span><b>Azul Networks</b></a>
+      <div class="links">
+        <a href="#approach">Approach</a>
+        <a href="#process">How it works</a>
+        <a href="#system">The system</a>
+        <a href="#results">Results</a>
+        <a href="dashboard.html" class="signin">Sign in <span aria-hidden="true">→</span></a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow"><span class="dot"></span>AI-driven media buying</div>
+      <h1>Scale your TikTok &amp; Meta ad spend with autonomous AI.</h1>
+      <p>A solo media buyer tops out around $1,000 a day. Azul Networks agents launch, optimize and pace budget across ad accounts — profitably scaling TikTok and Meta to as much as $50,000 a day.</p>
+      <div class="cta">
+        <a href="#contact" class="btn-primary">Book a strategy call <span aria-hidden="true">→</span></a>
+        <a href="dashboard.html" class="btn-ghost">Sign in <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="trust">Over <b>$1M</b> in ad results generated for partners</div>
+    </section>
+  </div>
+
+  <div class="marquee">
+    <span>Spend scaling</span><span class="sep">/</span><span>Predictive budgeting</span><span class="sep">/</span><span>Autonomous optimization</span><span class="sep">/</span><span>Budget pacing</span><span class="sep">/</span><span>Multi-account</span><span class="sep">/</span><span>TikTok Ads</span><span class="sep">/</span><span>Meta Ads</span><span class="sep">/</span>
+  </div>
+
+  <div class="wrap">
+    <section id="approach">
+      <div class="tag">What we do</div>
+      <h2 class="sec-h">Two channels, scaled by one AI.</h2>
+      <p class="sec-sub">You bring the offer and the creatives. Azul Networks agents launch, test and pace spend across TikTok and Meta — so you can put far more budget behind what's working, profitably, than any manual setup could handle.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="num">01 — TikTok engine</div>
+          <h3>Scale spend without losing efficiency.</h3>
+          <p>TikTok rewards momentum. We launch and test your creatives across structured campaigns, then the AI pushes budget into the winners as fast as they prove out.</p>
+          <ul>
+            <li><i class="ti ti-check" aria-hidden="true"></i>Structured Spark Ads &amp; in-feed campaigns</li>
+            <li><i class="ti ti-check" aria-hidden="true"></i>Rapid testing of your creatives</li>
+            <li><i class="ti ti-check" aria-hidden="true"></i>Autonomous budget &amp; bid management</li>
+            <li><i class="ti ti-check" aria-hidden="true"></i>TikTok Pixel + Events API tracking</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="num">02 — Meta engine</div>
+          <h3>Compound spend on clean signal.</h3>
+          <p>Meta scales when it's fed good data. Our models keep accounts in stable learning and let the AI pace budget toward the winners as you grow.</p>
+          <ul>
+            <li><i class="ti ti-check" aria-hidden="true"></i>Advantage+ &amp; manual campaign builds</li>
+            <li><i class="ti ti-check" aria-hidden="true"></i>Conversions API for first-party signal</li>
+            <li><i class="ti ti-check" aria-hidden="true"></i>AI budget pacing across ad sets</li>
+            <li><i class="ti ti-check" aria-hidden="true"></i>Multi-account spend orchestration</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="tag">How it works</div>
+      <h2 class="sec-h">From first dollar to fifty thousand a day.</h2>
+      <p class="sec-sub">A self-improving loop. Once it's live, the AI moves more spend toward what converts with every result it sees.</p>
+      <div class="steps">
+        <div class="step"><div class="n">01</div><h3>Connect &amp; model</h3><p>We connect ad accounts, pixels and data, and the AI models your offer, margins and target cost per result.</p></div>
+        <div class="step"><div class="n">02</div><h3>Launch &amp; test</h3><p>We launch your creatives across structured test campaigns on TikTok and Meta so the winners surface fast.</p></div>
+        <div class="step"><div class="n">03</div><h3>Optimize &amp; scale</h3><p>The AI runs 24/7 — cutting losers, pacing budget into winners, and increasing spend as fast as efficiency allows.</p></div>
+        <div class="step"><div class="n">04</div><h3>Compound</h3><p>Profitable spend scales deliberately to protect your cost per result, with a clear dashboard for spend, results and CPA.</p></div>
+      </div>
+    </section>
+
+    <section id="system">
+      <div class="tag">The system</div>
+      <h2 class="sec-h">What the AI handles.</h2>
+      <p class="sec-sub">Everything below runs as one autonomous pipeline — so you can run real spend without the manual ceiling that caps a single buyer.</p>
+      <div class="cards">
+        <div class="card"><h3>Spend scaling</h3><p>The AI increases budget into winners as fast as efficiency allows — far past a manual ceiling.</p></div>
+        <div class="card"><h3>Autonomous optimization</h3><p>Agents watch every campaign around the clock and reallocate budget toward what converts.</p></div>
+        <div class="card"><h3>Predictive budget pacing</h3><p>Spend is paced by models to hit your target cost per result and protect efficiency as you scale.</p></div>
+        <div class="card"><h3>Multi-account orchestration</h3><p>Budget is coordinated across accounts and campaigns, so you can run serious volume cleanly.</p></div>
+        <div class="card"><h3>Compliance guardrails</h3><p>Campaigns and claims are kept inside platform policy, so accounts stay live and stable as you scale.</p></div>
+        <div class="card"><h3>Live reporting</h3><p>One dashboard for spend, results and CPA — the numbers that actually decide your month.</p></div>
+      </div>
+    </section>
+
+    <section id="results">
+      <div class="tag">Why it works</div>
+      <h2 class="sec-h">Built to put real budget behind what works.</h2>
+      <p class="sec-sub">The system is engineered to scale spend the moment something proves out — past the point a single media buyer can manage by hand.</p>
+      <div class="stats">
+        <div class="stat"><div class="big">$1M+</div><div class="lbl">In ad results generated across partner campaigns</div></div>
+        <div class="stat"><div class="big">$50k/day</div><div class="lbl">Ad spend the AI can profitably manage on both platforms</div></div>
+        <div class="stat"><div class="big">24/7</div><div class="lbl">Autonomous optimization across both channels</div></div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="contact">
+        <h2>Put more budget behind what works.</h2>
+        <p>Tell us your offer, your margins and your current spend. We'll show you how far the AI could scale it across TikTok and Meta.</p>
+        <div class="cta">
+          <a href="mailto:hello@azul-networks.com?subject=Strategy%20call" class="btn-primary">hello@azul-networks.com <span aria-hidden="true">→</span></a>
+          <a href="dashboard.html" class="btn-ghost">Sign in <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="brand"><span class="logo"></span><b>Azul Networks</b></div>
+      <div class="mono">© Azul Networks · Frankfurt am Main</div>
+    </div>
+  </footer>
+</main>
+</body>
+</html>
