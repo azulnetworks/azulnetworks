@@ -1,0 +1,12 @@
+const { cors, requireAuth } = require("./_auth");
+const { getBalance } = require("./_tiktok");
+
+module.exports = async (req, res) => {
+  if (cors(req, res)) return;
+  if (!requireAuth(req)) return res.status(401).json({ error: "unauthorized" });
+  try {
+    return res.status(200).json(await getBalance());
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+};
